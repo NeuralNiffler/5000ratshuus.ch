@@ -19,4 +19,11 @@ const { eintrag } = Astro.props;
   <h3>
     <a href={`${getArtikelUrlByOrdner(eintrag.ausgabeOrdner)}#${eintrag.geschaeftId}`}>{eintrag.titel}</a>
   </h3>
+  {eintrag.tags.length > 0 && (
+    <ul class="item-tags">
+      {eintrag.tags.map((tag) => (
+        <li>{tag}</li>
+      ))}
+    </ul>
+  )}
 </li>

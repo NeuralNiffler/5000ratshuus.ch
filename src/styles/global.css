@@ -371,11 +371,11 @@ header.site-header nav a:hover {
   padding: 0;
   margin: 0;
 }
-.artikel-liste li {
+.artikel-liste > li {
   border-bottom: 1px solid var(--line);
   padding: 1.1rem 0;
 }
-.artikel-liste li:first-child {
+.artikel-liste > li:first-child {
   padding-top: 0;
 }
 .artikel-liste h2,
