@@ -20,6 +20,8 @@ workers/**/.dev.vars
 .DS_Store
 .vscode/*
 !.vscode/extensions.json
+.idea/
+.claude/
 
 # Logs
 npm-debug.log*

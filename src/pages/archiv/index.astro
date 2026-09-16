@@ -1,23 +1,23 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getAllAusgaben, getArtikelUrl } from "../../lib/content";
-import { getDistinctTags, getDistinctArten, GESCHAEFT_ART_LABEL } from "../../lib/index-db";
-import { formatDatumLesbar, slugify } from "../../lib/format";
+import GeschaeftListItem from "../../components/GeschaeftListItem.astro";
+import { getAlleGeschaefte, getDistinctTags, getDistinctArten, GESCHAEFT_ART_LABEL } from "../../lib/index-db";
+import { slugify } from "../../lib/format";
 import { siteConfig } from "../../site.config";
 
-const ausgaben = getAllAusgaben();
+const eintraege = getAlleGeschaefte();
 const tags = getDistinctTags();
 const arten = getDistinctArten();
 ---
 
 <BaseLayout
   title="Archiv"
-  description={`Alle Artikel von ${siteConfig.name}, chronologisch, sowie nach Thema und Art des Geschäfts.`}
+  description={`Alle Geschäfte von ${siteConfig.name}, chronologisch, sowie nach Thema und Art des Geschäfts.`}
 >
   <h1>Archiv</h1>
 
   <p class="page-content">
-    Alle bisher publizierten Artikel, chronologisch. Zusätzlich nach Thema oder Art des Geschäfts gefiltert:
+    Alle bisherigen Geschäfte, chronologisch. Zusätzlich nach Thema oder Art des Geschäfts gefiltert:
   </p>
 
   <nav class="archiv-nav" aria-label="Nach Thema">
@@ -32,17 +32,6 @@ const arten = getDistinctArten();
   </nav>
 
   <ul class="artikel-liste">
-    {
-      ausgaben.map((ausgabe) => (
-        <li>
-          <p class="eyebrow">
-            {formatDatumLesbar(ausgabe.frontmatter.datePublished)} · {ausgabe.frontmatter.kategorie}
-          </p>
-          <h2>
-            <a href={getArtikelUrl(ausgabe)}>{ausgabe.frontmatter.headline}</a>
-          </h2>
-        </li>
-      ))
-    }
+    {eintraege.map((eintrag) => <GeschaeftListItem eintrag={eintrag} />)}
   </ul>
 </BaseLayout>

@@ -1,8 +1,8 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import GeschaeftListItem from "../../../components/GeschaeftListItem.astro";
 import { getDistinctTags, getGeschaefteByTag } from "../../../lib/index-db";
-import { getArtikelUrlByOrdner } from "../../../lib/content";
-import { formatDatumLesbar, slugify } from "../../../lib/format";
+import { slugify } from "../../../lib/format";
 import { siteConfig } from "../../../site.config";
 
 export function getStaticPaths() {
@@ -24,18 +24,6 @@ const eintraege = getGeschaefteByTag(tag);
   <p class="page-content"><a href="/archiv/">← Zurück zum Archiv</a></p>
 
   <ul class="artikel-liste">
-    {
-      eintraege.map((e) => (
-        <li>
-          <p class="eyebrow">
-            {formatDatumLesbar(e.publikationsdatum)}
-            {e.ereignis && ` · ${e.ereignis}`}
-          </p>
-          <h3>
-            <a href={`${getArtikelUrlByOrdner(e.ausgabeOrdner)}#${e.geschaeftId}`}>{e.titel}</a>
-          </h3>
-        </li>
-      ))
-    }
+    {eintraege.map((eintrag) => <GeschaeftListItem eintrag={eintrag} />)}
   </ul>
 </BaseLayout>

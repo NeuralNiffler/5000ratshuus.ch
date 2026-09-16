@@ -1,8 +1,7 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
+import GeschaeftListItem from "../../../components/GeschaeftListItem.astro";
 import { getDistinctArten, getGeschaefteByArt, GESCHAEFT_ART_LABEL } from "../../../lib/index-db";
-import { getArtikelUrlByOrdner } from "../../../lib/content";
-import { formatDatumLesbar } from "../../../lib/format";
 import { siteConfig } from "../../../site.config";
 import type { GeschaeftArt } from "../../../lib/schema";
 
@@ -26,19 +25,6 @@ const eintraege = getGeschaefteByArt(art);
   <p class="page-content"><a href="/archiv/">← Zurück zum Archiv</a></p>
 
   <ul class="artikel-liste">
-    {
-      eintraege.map((e) => (
-        <li>
-          <p class="eyebrow">
-            {formatDatumLesbar(e.publikationsdatum)}
-            {e.urheberName && ` · ${e.urheberName}${e.urheberPartei ? ` (${e.urheberPartei})` : ""}`}
-            {e.ereignis && ` · ${e.ereignis}`}
-          </p>
-          <h3>
-            <a href={`${getArtikelUrlByOrdner(e.ausgabeOrdner)}#${e.geschaeftId}`}>{e.titel}</a>
-          </h3>
-        </li>
-      ))
-    }
+    {eintraege.map((eintrag) => <GeschaeftListItem eintrag={eintrag} />)}
   </ul>
 </BaseLayout>

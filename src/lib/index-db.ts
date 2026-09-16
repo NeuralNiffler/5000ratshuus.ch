@@ -225,4 +225,12 @@ export function getGeschaefteByArt(art: GeschaeftArt): ArchivEintrag[] {
   });
 }
 
+export function getAlleGeschaefte(): ArchivEintrag[] {
+  return withDb((db) => {
+    const rows = db.prepare(`SELECT * FROM geschaefte ORDER BY publikationsdatum DESC`).all() as any[];
+    const { tags, quellen } = ladeZusatzdaten(db, rows.map((r) => r.row_id));
+    return rows.map((r) => mapRow(r, tags, quellen));
+  });
+}
+
 export { GESCHAEFT_ART_LABEL };

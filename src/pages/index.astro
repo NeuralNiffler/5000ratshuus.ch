@@ -1,10 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getAllAusgaben, getArtikelUrl } from "../lib/content";
-import { formatDatumLesbar } from "../lib/format";
+import GeschaeftListItem from "../components/GeschaeftListItem.astro";
+import { getAlleGeschaefte, getDistinctTags, getDistinctArten, GESCHAEFT_ART_LABEL } from "../lib/index-db";
+import { slugify } from "../lib/format";
 import { siteConfig } from "../site.config";
 
-const ausgaben = getAllAusgaben();
+const eintraege = getAlleGeschaefte();
+const tags = getDistinctTags();
+const arten = getDistinctArten();
 ---
 
 <BaseLayout title={siteConfig.name} description={siteConfig.description}>
@@ -14,20 +17,19 @@ const ausgaben = getAllAusgaben();
     und immer mit Link zur amtlichen Originalquelle, nicht nur zur Zusammenfassung.
   </p>
 
+  <nav class="archiv-nav" aria-label="Nach Thema">
+    {tags.map((tag) => (
+      <a href={`/archiv/thema/${slugify(tag)}/`}>{tag}</a>
+    ))}
+  </nav>
+  <nav class="archiv-nav" aria-label="Nach Art des Geschäfts">
+    {arten.map((art) => (
+      <a href={`/archiv/art/${art}/`}>{GESCHAEFT_ART_LABEL[art]}</a>
+    ))}
+  </nav>
+
   <ul class="artikel-liste">
-    {
-      ausgaben.map((ausgabe) => (
-        <li>
-          <p class="eyebrow">
-            {formatDatumLesbar(ausgabe.frontmatter.datePublished)} · {ausgabe.frontmatter.kategorie}
-          </p>
-          <h2>
-            <a href={getArtikelUrl(ausgabe)}>{ausgabe.frontmatter.headline}</a>
-          </h2>
-          <p>{ausgabe.frontmatter.description}</p>
-        </li>
-      ))
-    }
+    {eintraege.map((eintrag) => <GeschaeftListItem eintrag={eintrag} />)}
   </ul>
 
   <p class="page-content"><a href="/archiv/">Zum vollständigen Archiv →</a></p>
