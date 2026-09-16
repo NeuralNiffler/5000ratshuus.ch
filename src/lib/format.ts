@@ -41,3 +41,27 @@ export function slugify(text: string): string {
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 }
+
+/**
+ * Die Zusätze hinter Datum und Urheberschaft in Geschäftslisten, etwa
+ * "Gewählt" oder "Referendumspflichtig".
+ *
+ * Jeder Zusatz stammt aus einem ausdrücklich gesetzten Feld, nichts wird
+ * erschlossen:
+ * - `ereignis` im Wortlaut der Quelle,
+ * - "Referendumspflichtig", wenn die Quelle den Beschluss so ausweist,
+ * - "Budgetiert, nicht effektiv" bei Budget- und Politikplan-Zahlen.
+ *
+ * Eine Referendumsfrist erscheint hier nie, auch nicht als Datum.
+ */
+export function statusZusaetze(e: {
+  ereignis: string | null;
+  referendumspflichtig: boolean;
+  budgetiert: boolean;
+}): string[] {
+  return [
+    e.ereignis,
+    e.referendumspflichtig ? "Referendumspflichtig" : null,
+    e.budgetiert ? "Budgetiert, nicht effektiv" : null,
+  ].filter((z): z is string => Boolean(z));
+}

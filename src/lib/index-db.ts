@@ -47,6 +47,7 @@ export function buildIndex(): void {
         urheber_partei TEXT,
         ereignis TEXT,
         referendumspflichtig INTEGER NOT NULL,
+        budgetiert INTEGER NOT NULL,
         sitzungsdatum TEXT,
         publikationsdatum TEXT NOT NULL,
         gruppe TEXT
@@ -68,6 +69,10 @@ export function buildIndex(): void {
       CREATE INDEX idx_geschaefte_art ON geschaefte(art);
     `);
 
+    // "Budgetiert, nicht effektiv" ist im Frontmatter pro Ausgabe gesetzt
+    // (forecast) und gilt damit für ihre Geschäfte.
+    const budgetiert = new Map(getAllAusgaben().map((a) => [a.ordner, a.frontmatter.forecast]));
+
     const insertAusgabe = db.prepare(
       `INSERT INTO ausgaben (slug, ordner, headline, template, date_published) VALUES (?, ?, ?, ?, ?)`,
     );
@@ -83,8 +88,8 @@ export function buildIndex(): void {
 
     const insertGeschaeft = db.prepare(`
       INSERT INTO geschaefte
-        (row_id, ausgabe_ordner, geschaeft_id, titel, art, urheber_name, urheber_partei, ereignis, referendumspflichtig, sitzungsdatum, publikationsdatum, gruppe)
-      VALUES (@rowId, @ausgabe, @id, @titel, @art, @urheberName, @urheberPartei, @ereignis, @referendumspflichtig, @sitzungsdatum, @publikationsdatum, @gruppe)
+        (row_id, ausgabe_ordner, geschaeft_id, titel, art, urheber_name, urheber_partei, ereignis, referendumspflichtig, budgetiert, sitzungsdatum, publikationsdatum, gruppe)
+      VALUES (@rowId, @ausgabe, @id, @titel, @art, @urheberName, @urheberPartei, @ereignis, @referendumspflichtig, @budgetiert, @sitzungsdatum, @publikationsdatum, @gruppe)
     `);
     const insertTag = db.prepare(`INSERT INTO geschaeft_tags (row_id, tag) VALUES (?, ?)`);
     const insertQuelle = db.prepare(
@@ -103,6 +108,7 @@ export function buildIndex(): void {
         urheberPartei: g.urheber?.partei ?? null,
         ereignis: g.ereignis,
         referendumspflichtig: g.referendumspflichtig ? 1 : 0,
+        budgetiert: budgetiert.get(g.ausgabe) ? 1 : 0,
         sitzungsdatum: g.sitzungsdatum,
         publikationsdatum: g.publikationsdatum,
         gruppe: g.gruppe,
@@ -135,6 +141,8 @@ export interface ArchivEintrag {
   urheberPartei: string | null;
   ereignis: string | null;
   referendumspflichtig: boolean;
+  /** Zahlen aus Budget oder Politikplan: Prognosen, keine Ist-Werte. */
+  budgetiert: boolean;
   publikationsdatum: string;
   tags: string[];
   quellen: { url: string; label: string; typ: string }[];
@@ -181,6 +189,7 @@ function mapRow(
     urheberPartei: row.urheber_partei,
     ereignis: row.ereignis,
     referendumspflichtig: !!row.referendumspflichtig,
+    budgetiert: !!row.budgetiert,
     publikationsdatum: row.publikationsdatum,
     tags: tags.get(row.row_id) ?? [],
     quellen: quellen.get(row.row_id) ?? [],

@@ -1,6 +1,6 @@
 ---
 import { getArtikelUrlByOrdner } from "../lib/content";
-import { formatDatumLesbar } from "../lib/format";
+import { formatDatumLesbar, statusZusaetze } from "../lib/format";
 import type { ArchivEintrag } from "../lib/index-db";
 
 interface Props {
@@ -14,7 +14,7 @@ const { eintrag } = Astro.props;
   <p class="eyebrow">
     {formatDatumLesbar(eintrag.publikationsdatum)}
     {eintrag.urheberName && ` · ${eintrag.urheberName}${eintrag.urheberPartei ? ` (${eintrag.urheberPartei})` : ""}`}
-    {eintrag.ereignis && ` · ${eintrag.ereignis}`}
+    {statusZusaetze(eintrag).map((zusatz) => ` · ${zusatz}`)}
   </p>
   <h3>
     <a href={`${getArtikelUrlByOrdner(eintrag.ausgabeOrdner)}#${eintrag.geschaeftId}`}>{eintrag.titel}</a>
