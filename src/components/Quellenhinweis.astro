@@ -1,0 +1,16 @@
+---
+import { formatDatumLesbar } from "../lib/format";
+
+interface Props {
+  kategorie: string;
+  datePublished: string;
+  quelleAmtlich: string;
+}
+
+const { kategorie, datePublished, quelleAmtlich } = Astro.props;
+---
+
+<p class="quellenhinweis">
+  <strong>Quelle:</strong> {kategorie} der Stadt Aarau, veröffentlicht {formatDatumLesbar(datePublished)},{" "}
+  <a href={quelleAmtlich} target="_blank" rel="noopener">{quelleAmtlich}</a>
+</p>

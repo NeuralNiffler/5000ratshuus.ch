@@ -7,6 +7,7 @@
 import type { Ausgabe } from "../lib/schema";
 import { formatDatumLesbar } from "../lib/format";
 import Korrekturhinweis from "./Korrekturhinweis.astro";
+import Quellenhinweis from "./Quellenhinweis.astro";
 
 interface Props {
   ausgabe: Ausgabe;
@@ -20,6 +21,12 @@ const { frontmatter, geschaefte, bodyHtml } = ausgabe;
   Aufhänger: Newsletter der Stadt Aarau, {frontmatter.newsletter.datum} · {frontmatter.kategorie}
 </p>
 <h1>{frontmatter.headline}</h1>
+
+<Quellenhinweis
+  kategorie={frontmatter.kategorie}
+  datePublished={frontmatter.datePublished}
+  quelleAmtlich={frontmatter.quelleAmtlich}
+/>
 
 <Korrekturhinweis korrekturen={frontmatter.korrekturen} />
 
@@ -74,10 +81,6 @@ const { frontmatter, geschaefte, bodyHtml } = ausgabe;
 }
 
 <footer class="artikel-footer">
-  <p>
-    Quelle: {frontmatter.kategorie} der Stadt Aarau, veröffentlicht {formatDatumLesbar(frontmatter.datePublished)},{" "}
-    <a href={frontmatter.quelleAmtlich} target="_blank" rel="noopener">{frontmatter.quelleAmtlich}</a>.
-  </p>
   <p class="note">
     Erstellt aus der Newsletter-Ausgabe „{frontmatter.newsletter.betreff}" der Stadt Aarau
     (kommunikation@aarau.ch) vom {frontmatter.newsletter.datum}.
