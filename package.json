@@ -1,0 +1,37 @@
+{
+  "name": "5000ratshuus.ch",
+  "type": "module",
+  "version": "0.0.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "prebuild": "tsx scripts/build-index.ts",
+    "build": "astro build",
+    "build:index": "tsx scripts/build-index.ts",
+    "preview": "astro preview",
+    "astro": "astro",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.2",
+    "better-sqlite3": "^13.0.3",
+    "gray-matter": "^4.0.3",
+    "marked": "^18.0.13",
+    "zod": "^4.6.5"
+  },
+  "allowScripts": {
+    "esbuild": true
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^24.13.5",
+    "tsx": "^4.23.13",
+    "typescript": "^6.0.3",
+    "wrangler": "^4.132.0"
+  }
+}

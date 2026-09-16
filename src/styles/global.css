@@ -1,0 +1,427 @@
+/*
+ * Zentrales Stylesheet. Variablen und Grundstile stammen aus den erprobten
+ * Templates A und B in docs/aarau-newsletter-artikel/SKILL.md und werden
+ * hier für die ganze Website an einem Ort geführt (Entwicklungsdokument F4:
+ * "gehören in die Website und nicht in jede einzelne Artikeldatei").
+ */
+
+:root {
+  --bg: #faf8f4;
+  --panel: #ffffff;
+  --ink: #1c1a17;
+  --sub: #5a564e;
+  --line: #e4ded2;
+  --accent: #8a5a2b;
+  --accent-ink: #ffffff;
+  --tag-bg: #f1ebdd;
+  --tag-ink: #5a4522;
+  --forecast-bg: #fbf1e0;
+  --forecast-line: #e0b878;
+  --forecast-ink: #8a5a12;
+  --done-bg: #eef1ec;
+  --done-line: #b9c6b4;
+  --done-ink: #4b5c46;
+
+  --font-serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17140f;
+    --panel: #211d17;
+    --ink: #f0ece2;
+    --sub: #b9b2a3;
+    --line: #3a3327;
+    --accent: #d99a52;
+    --accent-ink: #1c1a17;
+    --tag-bg: #332c1f;
+    --tag-ink: #e3c48c;
+    --forecast-bg: #2d2415;
+    --forecast-line: #8a672f;
+    --forecast-ink: #e3b269;
+    --done-bg: #20241f;
+    --done-line: #455040;
+    --done-ink: #a9c0a2;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: light dark;
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  margin: 0;
+  font-family: var(--font-serif);
+  line-height: 1.55;
+}
+
+a {
+  color: inherit;
+}
+
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding-inline: 1.25rem;
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  color: var(--sub);
+  font-weight: 600;
+}
+
+h1 {
+  font-size: 1.9rem;
+  line-height: 1.25;
+  margin: 0.4rem 0 1rem;
+}
+
+.meta-row {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: var(--sub);
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding-block: 0.6rem;
+  margin-bottom: 1.25rem;
+}
+
+nav.toc {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 2rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+}
+nav.toc h2 {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sub);
+  margin: 0 0 0.5rem;
+}
+nav.toc ol {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+nav.toc li {
+  margin-bottom: 0.25rem;
+}
+nav.toc a {
+  color: var(--ink);
+}
+
+section.group {
+  margin-bottom: 2.25rem;
+}
+section.group > h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+section.group > .group-intro {
+  color: var(--sub);
+  font-size: 0.95rem;
+  margin-top: 0;
+}
+
+article.geschaeft {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.7rem;
+  padding: 1.1rem 1.3rem;
+  margin-bottom: 1rem;
+  scroll-margin-top: 1rem;
+}
+article.geschaeft h3 {
+  font-size: 1.08rem;
+  margin: 0 0 0.4rem;
+}
+article.geschaeft p.body-text {
+  margin: 0.4rem 0 0.6rem;
+}
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 0.15rem 0.55rem;
+  border-radius: 999px;
+  margin-bottom: 0.5rem;
+}
+.badge.done {
+  background: var(--done-bg);
+  color: var(--done-ink);
+  border: 1px solid var(--done-line);
+}
+.badge.forecast {
+  background: var(--forecast-bg);
+  color: var(--forecast-ink);
+  border: 1px solid var(--forecast-line);
+}
+
+.source-link {
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  margin: 0.15rem 0 0.7rem;
+}
+.source-link a {
+  color: var(--accent-ink);
+  background: var(--accent);
+  text-decoration: none;
+  padding: 0.3rem 0.7rem;
+  border-radius: 0.4rem;
+  display: inline-block;
+}
+.source-link a:hover {
+  filter: brightness(1.08);
+}
+
+.item-tags {
+  list-style: none;
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  padding: 0;
+  margin: 0.6rem 0 0;
+}
+.item-tags li {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  background: var(--tag-bg);
+  color: var(--tag-ink);
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+}
+
+.subgroup {
+  margin-bottom: 1.5rem;
+}
+.subgroup h3 {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sub);
+  margin: 0 0 0.5rem;
+}
+
+/*
+ * Tabellen dürfen auf dem Telefon breiter als der Viewport sein
+ * (viele Spalten), sollen dabei aber nie die ganze Seite horizontal
+ * aufreissen. Deshalb scrollt nur dieser Wrapper, nicht die Seite.
+ */
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 0;
+}
+
+table.geschaeft-table {
+  width: 100%;
+  min-width: 30rem;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+table.geschaeft-table th,
+table.geschaeft-table td {
+  text-align: left;
+  padding: 0.55rem 0.7rem;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+table.geschaeft-table thead th {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--sub);
+  font-weight: 600;
+}
+table.geschaeft-table tbody tr:last-child td {
+  border-bottom: none;
+}
+table.geschaeft-table td.status {
+  white-space: nowrap;
+}
+table.geschaeft-table td .badge {
+  margin: 0;
+}
+table.geschaeft-table td a {
+  color: var(--accent);
+  text-decoration: underline;
+  white-space: nowrap;
+}
+table.geschaeft-table td .item-tags {
+  margin: 0;
+}
+
+.kennzahlen {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  padding: 0.9rem 1.2rem;
+  margin: 0 0 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+}
+.kennzahlen dt {
+  color: var(--sub);
+  font-size: 0.76rem;
+  margin-top: 0.5rem;
+}
+.kennzahlen dt:first-child {
+  margin-top: 0;
+}
+.kennzahlen dd {
+  margin: 0;
+  font-size: 1rem;
+  font-family: var(--font-serif);
+}
+
+footer.site-footer,
+footer.artikel-footer {
+  border-top: 1px solid var(--line);
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  color: var(--sub);
+}
+footer.site-footer a,
+footer.artikel-footer a {
+  color: var(--sub);
+}
+footer.site-footer .note,
+footer.artikel-footer .note {
+  margin-top: 0.8rem;
+  font-style: italic;
+}
+
+header.site-header {
+  font-family: var(--font-sans);
+  padding-block: 1.25rem;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 2rem;
+}
+header.site-header .wrap {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+}
+header.site-header a.brand {
+  font-family: var(--font-serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--ink);
+}
+header.site-header nav {
+  display: flex;
+  gap: 1.1rem;
+  font-size: 0.85rem;
+}
+header.site-header nav a {
+  text-decoration: none;
+  color: var(--sub);
+}
+header.site-header nav a:hover {
+  color: var(--ink);
+}
+
+.korrekturhinweis {
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  background: var(--forecast-bg);
+  border: 1px solid var(--forecast-line);
+  color: var(--forecast-ink);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  margin-bottom: 1.25rem;
+}
+.korrekturhinweis ul {
+  margin: 0.3rem 0 0;
+  padding-left: 1.1rem;
+}
+
+.artikel-liste {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.artikel-liste li {
+  border-bottom: 1px solid var(--line);
+  padding: 1.1rem 0;
+}
+.artikel-liste li:first-child {
+  padding-top: 0;
+}
+.artikel-liste h2,
+.artikel-liste h3 {
+  margin: 0.2rem 0 0.3rem;
+  font-size: 1.2rem;
+}
+.artikel-liste a {
+  text-decoration: none;
+  color: var(--ink);
+}
+.artikel-liste a:hover {
+  text-decoration: underline;
+}
+.artikel-liste .eyebrow {
+  margin: 0;
+}
+
+.archiv-nav {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1.5rem 0 2rem;
+}
+.archiv-nav a {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: var(--tag-bg);
+  color: var(--tag-ink);
+  text-decoration: none;
+}
+.archiv-nav a[aria-current="page"] {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.page-content {
+  font-size: 0.98rem;
+}
+.page-content h2 {
+  font-size: 1.3rem;
+}
+
+[hidden] {
+  display: none !important;
+}

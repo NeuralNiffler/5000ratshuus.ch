@@ -1,0 +1,25 @@
+# Build-Ausgaben
+dist/
+.astro/
+.build/
+
+# Lokaler Cloudflare-Worker-Entwicklungsstand (wrangler dev / miniflare)
+.wrangler/
+
+# Abhängigkeiten
+node_modules/
+
+# Umgebungsvariablen und Geheimnisse
+.env
+.env.*
+!.env.example
+.dev.vars
+workers/**/.dev.vars
+
+# Editor/OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+
+# Logs
+npm-debug.log*

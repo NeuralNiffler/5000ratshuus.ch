@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../site.config";
+---
+
+<BaseLayout title="Impressum" description={`Impressum von ${siteConfig.name}.`}>
+  <h1>Impressum</h1>
+  <div class="page-content">
+    <p>
+      <strong>Noch nicht abschliessend festgelegt.</strong> Ob und mit welchen Angaben (Name, Adresse) diese
+      private, nicht-kommerzielle Seite ein Impressum braucht, ist laut Projektplanung offen und wird vor dem
+      Live-Gang geklärt.
+    </p>
+    <p>{siteConfig.privateNotice}</p>
+    <p>
+      Betreiberin/Betreiber: <em>[Platzhalter — wird vor Live-Gang ergänzt]</em><br />
+      Kontakt: über das <a href="/kontakt/">Kontaktformular</a>
+    </p>
+    <p>
+      Diese Seite verlinkt auf amtliche Quellen der Stadt Aarau, steht aber in keiner Verbindung zu ihr und ist
+      kein amtliches Angebot der Stadt Aarau.
+    </p>
+  </div>
+</BaseLayout>

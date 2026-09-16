@@ -1,0 +1,187 @@
+---
+/**
+ * Template A: Ausgaben mit mehreren Geschäften (Beschlussliste einer
+ * Ratssitzung). Struktur nach docs/aarau-newsletter-artikel/SKILL.md:
+ * Inhaltsverzeichnis, Gruppe "Referendumspflichtig" mit einem Block pro
+ * Geschäft, Gruppe "Abschliessend entschieden" als Tabellen nach Art.
+ */
+import type { Ausgabe, Geschaeft, GeschaeftGruppe } from "../lib/schema";
+import { GESCHAEFT_GRUPPE_LABEL } from "../lib/schema";
+import { formatDatumLesbar } from "../lib/format";
+import Korrekturhinweis from "./Korrekturhinweis.astro";
+
+interface Props {
+  ausgabe: Ausgabe;
+}
+
+const { ausgabe } = Astro.props;
+const { frontmatter, geschaefte } = ausgabe;
+
+const referendumsGeschaefte = geschaefte.filter((g) => g.referendumspflichtig);
+const abschliessendGeschaefte = geschaefte.filter((g) => !g.referendumspflichtig);
+
+const GRUPPEN_REIHENFOLGE: GeschaeftGruppe[] = [
+  "wahlen",
+  "motionen-und-postulate",
+  "bevoelkerungsanliegen",
+  "sonstige",
+];
+
+const gruppen: { key: GeschaeftGruppe; geschaefte: Geschaeft[] }[] = GRUPPEN_REIHENFOLGE.map(
+  (key) => ({
+    key,
+    geschaefte: abschliessendGeschaefte.filter((g) => (g.gruppe ?? "sonstige") === key),
+  }),
+).filter((gruppe) => gruppe.geschaefte.length > 0);
+---
+
+<p class="eyebrow">
+  Aufhänger: Newsletter der Stadt Aarau, {frontmatter.newsletter.datum} · {frontmatter.kategorie}
+</p>
+<h1>{frontmatter.headline}</h1>
+
+<Korrekturhinweis korrekturen={frontmatter.korrekturen} />
+
+<div class="meta-row">
+  {frontmatter.sitzungsdatum && (
+    <span>
+      Sitzung: <time datetime={frontmatter.sitzungsdatum}>{formatDatumLesbar(frontmatter.sitzungsdatum)}</time>
+    </span>
+  )}
+  <span>
+    Publiziert: <time datetime={frontmatter.datePublished}>{formatDatumLesbar(frontmatter.datePublished)}</time>
+  </span>
+  {frontmatter.metaZeile.map((zeile) => <span>{zeile}</span>)}
+</div>
+
+{
+  (referendumsGeschaefte.length > 0 || abschliessendGeschaefte.length > 0) && (
+    <nav class="toc" aria-label="Inhalt dieser Ausgabe">
+      <h2>Behandelte Geschäfte</h2>
+      <ol>
+        {referendumsGeschaefte.map((g) => (
+          <li>
+            <a href={`#${g.id}`}>{g.titel}</a>
+          </li>
+        ))}
+        {abschliessendGeschaefte.length > 0 && (
+          <li>
+            <a href="#abschliessend">Abschliessend entschiedene Geschäfte</a>
+          </li>
+        )}
+      </ol>
+    </nav>
+  )
+}
+
+<main>
+  {
+    referendumsGeschaefte.length > 0 && (
+      <section class="group" id="referendum">
+        <h2>Referendumspflichtig</h2>
+        <p class="group-intro">
+          Wer mit {referendumsGeschaefte.length === 1 ? "diesem Beschluss" : `diesen ${referendumsGeschaefte.length} Beschlüssen`} nicht
+          einverstanden ist, kann per Referendum eine Volksabstimmung erzwingen. Das genaue Datum der
+          Unterschriftenfrist steht in der jeweiligen Originalquelle, unten bei jedem Geschäft verlinkt. Ohne
+          genug Unterschriften treten sie danach automatisch in Kraft.
+        </p>
+
+        {referendumsGeschaefte.map((g) => (
+          <article class="geschaeft" id={g.id} data-tags={g.tags.join(" ")}>
+            <h3>{g.titel}</h3>
+            <p class="source-link">
+              Details zum Geschäft hier:{" "}
+              {g.quellen.map((q, i) => (
+                <>
+                  {i > 0 && " "}
+                  <a href={q.url} target="_blank" rel="noopener">
+                    {q.label}
+                  </a>
+                </>
+              ))}
+            </p>
+            {g.kurztext && <p class="body-text">{g.kurztext}</p>}
+            {g.tags.length > 0 && (
+              <ul class="item-tags">
+                {g.tags.map((tag) => (
+                  <li>{tag}</li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))}
+      </section>
+    )
+  }
+
+  {
+    abschliessendGeschaefte.length > 0 && (
+      <section class="group" id="abschliessend">
+        <h2>Abschliessend entschieden</h2>
+        <p class="group-intro">
+          Diese Geschäfte sind bereits rechtskräftig, kein Referendum möglich. Nur Quelle, keine
+          Einzeleinordnung.
+        </p>
+
+        {gruppen.map((gruppe) => (
+          <div class="subgroup">
+            <h3>{GESCHAEFT_GRUPPE_LABEL[gruppe.key]}</h3>
+            <div class="table-scroll">
+              <table class="geschaeft-table">
+                <thead>
+                  <tr>
+                    <th>Geschäft</th>
+                    {gruppe.key !== "wahlen" && <th>Urheber/in</th>}
+                    <th>Ereignis</th>
+                    <th>Themen</th>
+                    <th>Quelle</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {gruppe.geschaefte.map((g) => (
+                    <tr id={g.id} data-tags={g.tags.join(" ")}>
+                      <td>{g.titel}</td>
+                      {gruppe.key !== "wahlen" && (
+                        <td>{g.urheber ? `${g.urheber.name}${g.urheber.partei ? ` (${g.urheber.partei})` : ""}` : "–"}</td>
+                      )}
+                      <td class="status">{g.ereignis && <span class="badge done">{g.ereignis}</span>}</td>
+                      <td>
+                        <ul class="item-tags">
+                          {g.tags.map((tag) => (
+                            <li>{tag}</li>
+                          ))}
+                        </ul>
+                      </td>
+                      <td>
+                        {g.quellen.map((q, i) => (
+                          <>
+                            {i > 0 && ", "}
+                            <a href={q.url} target="_blank" rel="noopener">
+                              {q.label}
+                            </a>
+                          </>
+                        ))}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </section>
+    )
+  }
+</main>
+
+<footer class="artikel-footer">
+  <p>
+    Quelle: {frontmatter.kategorie} der Stadt Aarau, veröffentlicht {formatDatumLesbar(frontmatter.datePublished)},{" "}
+    <a href={frontmatter.quelleAmtlich} target="_blank" rel="noopener">{frontmatter.quelleAmtlich}</a>. Alle
+    Botschaften und Reglementstexte einzeln oben pro Geschäft verlinkt.
+  </p>
+  <p class="note">
+    Erstellt aus der Newsletter-Ausgabe „{frontmatter.newsletter.betreff}" der Stadt Aarau
+    (kommunikation@aarau.ch) vom {frontmatter.newsletter.datum}.
+  </p>
+</footer>

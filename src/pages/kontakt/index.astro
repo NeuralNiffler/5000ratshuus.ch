@@ -1,0 +1,92 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { siteConfig } from "../../site.config";
+---
+
+<BaseLayout
+  title="Kontakt"
+  description={`Fehler melden oder Feedback geben zu ${siteConfig.name}.`}
+>
+  <h1>Kontakt</h1>
+  <div class="page-content">
+    <p>
+      Ist ein Artikel fehlerhaft, eine Quelle nicht mehr erreichbar, oder hast du sonst eine Rückmeldung?
+      Über dieses Formular erreichst du uns direkt.
+    </p>
+
+    <form class="kontakt-form" method="post" action="/api/kontakt">
+      <p>
+        <label for="name">Name (optional)</label><br />
+        <input type="text" id="name" name="name" autocomplete="name" />
+      </p>
+      <p>
+        <label for="email">E-Mail-Adresse *</label><br />
+        <input type="email" id="email" name="email" autocomplete="email" required />
+      </p>
+      <p>
+        <label for="nachricht">Nachricht *</label><br />
+        <textarea id="nachricht" name="nachricht" rows="6" required></textarea>
+      </p>
+      <!--
+        Honeypot-Feld gegen einfache Bots (siehe Plan, Frage C5): Für
+        Menschen unsichtbar, aber im DOM und für simple Formular-Bots
+        ausfüllbar. Der Kontakt-Worker verwirft jede Anfrage, bei der dieses
+        Feld nicht leer ist. Absichtlich kein type="hidden" oder
+        display:none, weil manche Bots das erkennen und überspringen.
+      -->
+      <p class="hp-field" aria-hidden="true">
+        <label for="website">Website</label>
+        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
+      </p>
+      <p>
+        <button type="submit">Nachricht senden</button>
+      </p>
+    </form>
+
+    <p>
+      Zieladresse und Spamschutz sind noch nicht final eingerichtet (siehe Projekt-Entscheide). Solange das
+      Kontaktformular nicht deployt ist, funktioniert es nicht.
+    </p>
+  </div>
+</BaseLayout>
+
+<style>
+  .kontakt-form label {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--sub);
+  }
+  .kontakt-form input,
+  .kontakt-form textarea {
+    width: 100%;
+    max-width: 32rem;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid var(--line);
+    border-radius: 0.4rem;
+    background: var(--panel);
+    color: var(--ink);
+  }
+  .kontakt-form button {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.55rem 1.1rem;
+    border: none;
+    border-radius: 0.4rem;
+    background: var(--accent);
+    color: var(--accent-ink);
+    cursor: pointer;
+  }
+  .kontakt-form button:hover {
+    filter: brightness(1.08);
+  }
+  .hp-field {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+</style>

@@ -1,0 +1,34 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getAllAusgaben, getArtikelUrl } from "../lib/content";
+import { formatDatumLesbar } from "../lib/format";
+import { siteConfig } from "../site.config";
+
+const ausgaben = getAllAusgaben();
+---
+
+<BaseLayout title={siteConfig.name} description={siteConfig.description}>
+  <h1>Aarauer Kommunalpolitik, quellenverlinkt</h1>
+  <p class="page-content">
+    Einwohnerrats-Beschlüsse, Budget und Planung der Stadt Aarau — aufbereitet aus dem städtischen Newsletter
+    und immer mit Link zur amtlichen Originalquelle, nicht nur zur Zusammenfassung.
+  </p>
+
+  <ul class="artikel-liste">
+    {
+      ausgaben.map((ausgabe) => (
+        <li>
+          <p class="eyebrow">
+            {formatDatumLesbar(ausgabe.frontmatter.datePublished)} · {ausgabe.frontmatter.kategorie}
+          </p>
+          <h2>
+            <a href={getArtikelUrl(ausgabe)}>{ausgabe.frontmatter.headline}</a>
+          </h2>
+          <p>{ausgabe.frontmatter.description}</p>
+        </li>
+      ))
+    }
+  </ul>
+
+  <p class="page-content"><a href="/archiv/">Zum vollständigen Archiv →</a></p>
+</BaseLayout>

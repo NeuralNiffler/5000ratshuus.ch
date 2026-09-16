@@ -1,0 +1,18 @@
+name = "5000ratshuus-kontakt"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+# mimetext (für den E-Mail-Aufbau) braucht Node-Polyfills für "path" u. a.
+compatibility_flags = ["nodejs_compat"]
+
+# Zieladresse für Kontaktmeldungen (siehe Plan, Frage C4 "zu definieren").
+# Muss in Cloudflare Email Routing als "verifizierte Zieladresse" hinterlegt
+# sein, sonst schlägt der Versand über das send_email-Binding fehl.
+[vars]
+KONTAKT_ZIEL_ADRESSE = "[NOCH FESTZULEGEN]"
+ABSENDER_ADRESSE = "kontaktformular@5000ratshuus.ch"
+
+# Erst wirksam, sobald die Domain auf Cloudflare läuft und Email Routing
+# eingerichtet ist (Phase 1c-Vorbereitung). Bis dahin schlägt send() im
+# lokalen `wrangler dev` fehl, das Worker-Handling selbst ist aber testbar.
+[[send_email]]
+name = "KONTAKT_MAIL"

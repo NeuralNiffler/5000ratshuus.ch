@@ -1,0 +1,33 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import ArtikelA from "../../../../components/ArtikelA.astro";
+import ArtikelB from "../../../../components/ArtikelB.astro";
+import JsonLd from "../../../../components/JsonLd.astro";
+import { getAllAusgaben, getArtikelPfad, getArtikelUrl } from "../../../../lib/content";
+import { siteConfig } from "../../../../site.config";
+
+export function getStaticPaths() {
+  return getAllAusgaben().map((ausgabe) => {
+    const { jahr, monat, slug } = getArtikelPfad(ausgabe);
+    return { params: { jahr, monat, slug }, props: { ausgabe } };
+  });
+}
+
+const { ausgabe } = Astro.props;
+const { frontmatter } = ausgabe;
+const url = new URL(getArtikelUrl(ausgabe), siteConfig.baseUrl).toString();
+---
+
+<BaseLayout
+  title={frontmatter.headline}
+  description={frontmatter.description}
+  keywords={frontmatter.keywords}
+  ogDescription={frontmatter.ogDescription}
+  ogType="article"
+  publishedTime={frontmatter.datePublished}
+>
+  <Fragment slot="head">
+    <JsonLd ausgabe={ausgabe} url={url} />
+  </Fragment>
+  {frontmatter.template === "A" ? <ArtikelA ausgabe={ausgabe} /> : <ArtikelB ausgabe={ausgabe} />}
+</BaseLayout>

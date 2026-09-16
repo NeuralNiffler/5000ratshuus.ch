@@ -1,0 +1,28 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../site.config";
+---
+
+<BaseLayout title="Datenschutz" description={`Datenschutzhinweis von ${siteConfig.name}.`}>
+  <h1>Datenschutz</h1>
+  <div class="page-content">
+    <p>
+      <strong>Noch nicht abschliessend festgelegt.</strong> Der genaue Wortlaut wird vor dem Live-Gang geklärt.
+      Vorläufiger Stand:
+    </p>
+    <ul>
+      <li>
+        Diese Seite liefert statische Seiten aus und bindet keine Analyse- oder Tracking-Skripte Dritter ein.
+      </li>
+      <li>
+        Über das <a href="/kontakt/">Kontaktformular</a> übermittelte Angaben (z. B. E-Mail-Adresse und
+        Nachricht) werden ausschliesslich zur Bearbeitung der Meldung verwendet und nicht an Dritte
+        weitergegeben.
+      </li>
+      <li>
+        Hosting und Zustellung des Kontaktformulars laufen über Cloudflare-Dienste. Details zur
+        Auftragsverarbeitung folgen, sobald diese Dienste eingerichtet sind.
+      </li>
+    </ul>
+  </div>
+</BaseLayout>

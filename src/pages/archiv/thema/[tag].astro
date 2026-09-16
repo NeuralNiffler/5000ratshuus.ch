@@ -1,0 +1,41 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getDistinctTags, getGeschaefteByTag } from "../../../lib/index-db";
+import { getArtikelUrlByOrdner } from "../../../lib/content";
+import { formatDatumLesbar, slugify } from "../../../lib/format";
+import { siteConfig } from "../../../site.config";
+
+export function getStaticPaths() {
+  return getDistinctTags().map((tag) => ({
+    params: { tag: slugify(tag) },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+const eintraege = getGeschaefteByTag(tag);
+---
+
+<BaseLayout
+  title={`Thema: ${tag}`}
+  description={`Alle Geschäfte zum Thema ${tag} auf ${siteConfig.name}, mit Link zur Quelle.`}
+>
+  <h1>Thema: {tag}</h1>
+  <p class="page-content"><a href="/archiv/">← Zurück zum Archiv</a></p>
+
+  <ul class="artikel-liste">
+    {
+      eintraege.map((e) => (
+        <li>
+          <p class="eyebrow">
+            {formatDatumLesbar(e.publikationsdatum)}
+            {e.ereignis && ` · ${e.ereignis}`}
+          </p>
+          <h3>
+            <a href={`${getArtikelUrlByOrdner(e.ausgabeOrdner)}#${e.geschaeftId}`}>{e.titel}</a>
+          </h3>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>

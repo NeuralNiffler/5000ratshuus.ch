@@ -1,0 +1,29 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../site.config";
+---
+
+<BaseLayout title="Disclaimer" description={`Disclaimer von ${siteConfig.name}.`}>
+  <h1>Disclaimer</h1>
+  <div class="page-content">
+    <p>{siteConfig.disclaimer}</p>
+    <p>
+      Die Artikel entstehen aus dem Newsletter der Stadt Aarau (<code>kommunikation@aarau.ch</code>), der nur
+      der Aufhänger ist. Jeder Artikel verlinkt auf die amtliche Originalquelle; im Zweifel gilt immer die
+      dort verlinkte amtliche Publikation, nicht der Artikeltext hier.
+    </p>
+    <p>
+      <strong>Referendumsfristen werden nie als Datum gezeigt.</strong> Wo ein Beschluss referendumspflichtig
+      ist, steht das hier als Ja/Nein-Status. Das genaue Datum der Unterschriftenfrist steht ausschliesslich
+      in der verlinkten Originalquelle. Grund: Ein falsch übertragenes Datum könnte jemanden eine echte Frist
+      verpassen lassen, und das wäre im Gegensatz zu den meisten anderen Fehlern nachträglich nicht mehr
+      korrigierbar.
+    </p>
+    <p>
+      Ist etwas fehlerhaft oder unklar dargestellt, bitte über das <a href="/kontakt/">Kontaktformular</a>{" "}
+      melden. Korrekturen werden im betroffenen Artikel sichtbar vermerkt, die Artikel-URL bleibt dabei
+      gleich.
+    </p>
+    <p>{siteConfig.privateNotice}</p>
+  </div>
+</BaseLayout>

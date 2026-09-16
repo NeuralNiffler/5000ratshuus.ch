@@ -1,0 +1,29 @@
+---
+import type { Korrektur } from "../lib/schema";
+
+interface Props {
+  korrekturen: Korrektur[];
+}
+
+const { korrekturen } = Astro.props;
+
+function formatDatum(iso: string): string {
+  const [jahr, monat, tag] = iso.split("-");
+  return `${tag}.${monat}.${jahr}`;
+}
+---
+
+{
+  korrekturen.length > 0 && (
+    <div class="korrekturhinweis">
+      <strong>Korrigiert:</strong>
+      <ul>
+        {korrekturen.map((k) => (
+          <li>
+            <time datetime={k.datum}>{formatDatum(k.datum)}</time>: {k.beschreibung}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}

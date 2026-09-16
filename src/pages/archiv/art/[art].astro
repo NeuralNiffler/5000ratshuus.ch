@@ -1,0 +1,44 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { getDistinctArten, getGeschaefteByArt, GESCHAEFT_ART_LABEL } from "../../../lib/index-db";
+import { getArtikelUrlByOrdner } from "../../../lib/content";
+import { formatDatumLesbar } from "../../../lib/format";
+import { siteConfig } from "../../../site.config";
+import type { GeschaeftArt } from "../../../lib/schema";
+
+export function getStaticPaths() {
+  return getDistinctArten().map((art) => ({
+    params: { art },
+    props: { art },
+  }));
+}
+
+const { art } = Astro.props as { art: GeschaeftArt };
+const label = GESCHAEFT_ART_LABEL[art];
+const eintraege = getGeschaefteByArt(art);
+---
+
+<BaseLayout
+  title={`Art: ${label}`}
+  description={`Alle Geschäfte der Art ${label} auf ${siteConfig.name}, mit Link zur Quelle.`}
+>
+  <h1>Art des Geschäfts: {label}</h1>
+  <p class="page-content"><a href="/archiv/">← Zurück zum Archiv</a></p>
+
+  <ul class="artikel-liste">
+    {
+      eintraege.map((e) => (
+        <li>
+          <p class="eyebrow">
+            {formatDatumLesbar(e.publikationsdatum)}
+            {e.urheberName && ` · ${e.urheberName}${e.urheberPartei ? ` (${e.urheberPartei})` : ""}`}
+            {e.ereignis && ` · ${e.ereignis}`}
+          </p>
+          <h3>
+            <a href={`${getArtikelUrlByOrdner(e.ausgabeOrdner)}#${e.geschaeftId}`}>{e.titel}</a>
+          </h3>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>

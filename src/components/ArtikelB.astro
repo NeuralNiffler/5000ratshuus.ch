@@ -1,0 +1,85 @@
+---
+/**
+ * Template B: Einzelthema (z. B. eine Medienmitteilung wie eine
+ * Budget-Ankündigung). Kein Inhaltsverzeichnis, keine Tabellen, optional
+ * eine Kennzahlen-Box. Siehe docs/aarau-newsletter-artikel/SKILL.md.
+ */
+import type { Ausgabe } from "../lib/schema";
+import { formatDatumLesbar } from "../lib/format";
+import Korrekturhinweis from "./Korrekturhinweis.astro";
+
+interface Props {
+  ausgabe: Ausgabe;
+}
+
+const { ausgabe } = Astro.props;
+const { frontmatter, geschaefte, bodyHtml } = ausgabe;
+---
+
+<p class="eyebrow">
+  Aufhänger: Newsletter der Stadt Aarau, {frontmatter.newsletter.datum} · {frontmatter.kategorie}
+</p>
+<h1>{frontmatter.headline}</h1>
+
+<Korrekturhinweis korrekturen={frontmatter.korrekturen} />
+
+<div class="meta-row">
+  <span>
+    Publiziert: <time datetime={frontmatter.datePublished}>{formatDatumLesbar(frontmatter.datePublished)}</time>
+  </span>
+  {frontmatter.metaZeile.map((zeile) => <span>{zeile}</span>)}
+</div>
+
+{
+  geschaefte.map((g) => (
+    <article class="geschaeft" id={g.id}>
+      <p class="source-link">
+        Details zum Geschäft hier:{" "}
+        {g.quellen.map((q, i) => (
+          <>
+            {i > 0 && " "}
+            <a href={q.url} target="_blank" rel="noopener">
+              {q.label}
+            </a>
+          </>
+        ))}
+      </p>
+
+      {frontmatter.forecast && <span class="badge forecast">Budgetiert, nicht effektiv</span>}
+
+      {frontmatter.kennzahlen && frontmatter.kennzahlen.length > 0 && (
+        <dl class="kennzahlen">
+          {frontmatter.kennzahlen.map((k) => (
+            <>
+              <dt>{k.label}</dt>
+              <dd>{k.wert}</dd>
+            </>
+          ))}
+        </dl>
+      )}
+
+      {g.kurztext && <p class="body-text">{g.kurztext}</p>}
+
+      <Fragment set:html={bodyHtml} />
+
+      {g.tags.length > 0 && (
+        <ul class="item-tags">
+          {g.tags.map((tag) => (
+            <li>{tag}</li>
+          ))}
+        </ul>
+      )}
+    </article>
+  ))
+}
+
+<footer class="artikel-footer">
+  <p>
+    Quelle: {frontmatter.kategorie} der Stadt Aarau, veröffentlicht {formatDatumLesbar(frontmatter.datePublished)},{" "}
+    <a href={frontmatter.quelleAmtlich} target="_blank" rel="noopener">{frontmatter.quelleAmtlich}</a>.
+  </p>
+  <p class="note">
+    Erstellt aus der Newsletter-Ausgabe „{frontmatter.newsletter.betreff}" der Stadt Aarau
+    (kommunikation@aarau.ch) vom {frontmatter.newsletter.datum}.
+  </p>
+</footer>
