@@ -402,6 +402,9 @@ header.site-header nav a:hover {
   gap: 0.5rem;
   margin: 1.5rem 0 2rem;
 }
+.eyebrow + .archiv-nav {
+  margin-top: 0.3rem;
+}
 .archiv-nav a {
   display: inline-block;
   padding: 0.2rem 0.65rem;

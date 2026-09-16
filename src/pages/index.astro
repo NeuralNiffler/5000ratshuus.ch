@@ -17,11 +17,13 @@ const arten = getDistinctArten();
     und immer mit Link zur amtlichen Originalquelle, nicht nur zur Zusammenfassung.
   </p>
 
+  <p class="eyebrow">Thema</p>
   <nav class="archiv-nav" aria-label="Nach Thema">
     {tags.map((tag) => (
       <a href={`/archiv/thema/${slugify(tag)}/`}>{tag}</a>
     ))}
   </nav>
+  <p class="eyebrow">Art des Geschäfts</p>
   <nav class="archiv-nav" aria-label="Nach Art des Geschäfts">
     {arten.map((art) => (
       <a href={`/archiv/art/${art}/`}>{GESCHAEFT_ART_LABEL[art]}</a>
