@@ -17,9 +17,11 @@ Originalquelle, nie nur auf die Zusammenfassungsseite oder die Mail.
 
 ```bash
 npm install
-npm run dev      # Astro-Dev-Server, baut den SQLite-Index bei jeder Anfrage neu
-npm run build    # prebuild (SQLite-Index) + astro build nach dist/
-npm run check    # astro check (Typprüfung)
+npm run dev              # Astro-Dev-Server, baut den SQLite-Index bei jeder Anfrage neu
+npm run build            # prebuild (SQLite-Index) + astro build nach dist/
+npm run check            # astro check (Typprüfung)
+npm run check:artikel    # Prüfungen vor der Publikation (Abschnitt 8), alle Ausgaben
+npm run demo:fristdatum-block  # Nachweis: Fristdatum blockiert die Publikation
 ```
 
 Dev-Server im Hintergrund starten: `astro dev --background`, verwaltet mit
@@ -96,26 +98,49 @@ verworfene Alternativen; hier nur die Umsetzung:
 
 ## Prüfungen vor der Publikation (Entwicklungsdokument Abschnitt 8)
 
-Noch nicht implementiert (Phase 1b, siehe Umsetzungsplan). Vorgesehen als
-eigenständiges, einzeln testbares Skript, das dieselben Schemas aus
-`src/lib/schema.ts` und dieselbe Leselogik aus `src/lib/content.ts`
-verwendet:
+Umgesetzt in [`src/lib/checks.ts`](src/lib/checks.ts), aufrufbar über
+`npm run check:artikel` ([`scripts/check-artikel.ts`](scripts/check-artikel.ts)).
+Läuft bewusst **nicht** als Teil von `npm run build`/`prebuild` — nur
+Prüfung 1 ist dort hart in `content.ts` verankert, die übrigen laufen nur
+über `check:artikel` und später als Gate in der Pipeline (Phase 1c) vor dem
+Commit, weil Prüfung 2 Live-Netzwerkaufrufe macht, die die lokale
+Entwicklung nicht verlangsamen sollen. Reines Node/TS ohne Astro-Abhängigkeit,
+verwendet dieselben Schemas aus `src/lib/schema.ts` und dieselbe Leselogik
+aus `src/lib/content.ts`.
 
-1. Kein Datum einer Referendumsfrist im Artikeltext (hart, blockiert) —
-   Basisversion bereits jetzt beim Einlesen aktiv, siehe oben.
-2. Jedes Geschäft hat mindestens eine erreichbare Quell-URL (Schema erzwingt
-   *mindestens eine* Quelle bereits beim Einlesen; die Erreichbarkeitsprüfung
-   selbst folgt in 1b).
+1. Kein Datum einer Referendumsfrist im Artikeltext (hart, blockiert) — läuft
+   beim Einlesen in `content.ts` (`assertKeinFristdatum`), auch pro Geschäft
+   (`titel`, `ereignis`, `kurztext`), nicht nur im Artikeltext.
+2. Jedes Geschäft hat mindestens eine erreichbare Quell-URL, geprüft über
+   [`src/lib/url-check.ts`](src/lib/url-check.ts) (`npm run check:artikel --
+   --offline` überspringt diese Prüfung für schnelle lokale Iteration).
+   **HTTP 403 zählt als eigener Status "blockiert"/"nicht_pruefbar"**, nicht
+   als Fehlschlag: aarau.ch liefert aktuell 403 für automatisierte Anfragen
+   und teils auch im normalen Browser (Stand 2026-09-16, Ursache unklar —
+   Bot-Abwehr oder Störung). Nur echte tote Links (404/5xx/Timeout) blockieren.
 3. Kein Eurozeichen im Text.
 4. Kein Platzhalter aus dem Template (`{{...}}`) im Ergebnis.
 5. Anzahl der Geschäfte im Artikel entspricht der Anzahl in der amtlichen
-   Publikation.
-6. Disclaimer und Link zum Kontaktformular sind vorhanden (aktuell fest im
-   `BaseLayout`, nicht separat geprüft).
-7. Gültiges JSON-LD, gesetzte Meta-Angaben, gesetztes Publikationsdatum.
-8. Keine leeren Abschnitte oder Tabellen ohne Zeilen (teilweise bereits durch
-   `content.ts` erzwungen: leere `geschaefte.json` bricht den Build ab, leere
-   Untergruppen werden beim Rendern übersprungen).
+   Publikation. **Noch nicht umgesetzt** (Status `uebersprungen`) — die
+   Vergleichszahl ist erst durch die Quellenauflösung der Pipeline (Phase 1c)
+   bekannt, siehe TODO in `checks.ts`.
+6. Disclaimer und Link zum Kontaktformular sind vorhanden — geprüft über
+   `pruefeDisclaimerUndKontakt()`, liest `BaseLayout.astro` und bestätigt,
+   dass `siteConfig.disclaimer`/`siteConfig.contactPath` dort referenziert
+   sind. Läuft einmal global (seitenweit verankert), nicht pro Ausgabe.
+7. Gültiges JSON-LD, gesetzte Meta-Angaben, gesetztes Publikationsdatum —
+   rekonstruiert dieselbe Objektform wie `JsonLd.astro` gegen die
+   Frontmatter-Daten, bewusst ohne echten `astro build`.
+8. Keine leeren Abschnitte oder Tabellen ohne Zeilen — leere `geschaefte.json`
+   bricht bereits beim Einlesen ab, leere Gruppen werden in `ArtikelA.astro`
+   vor dem Rendern gefiltert, zusätzlich ein Regex-Schutz gegen eine leere
+   Markdown-Tabelle im freien Fliesstext von Template B.
+
+**Nachweis für Prüfung 1** (Abnahmekriterium, Abschnitt 10 #5): `npm run
+demo:fristdatum-block` baut testweise ein Fristdatum in eine Kopie einer
+Beispielausgabe ein (unter `.build/`, nie committet) und bestätigt, dass das
+Einlesen dadurch hart abbricht. Kein permanenter Testrunner (bewusster
+Entscheid, siehe Umsetzungsplan) — ein On-Demand-Nachweis.
 
 ## Datenanforderung (Entwicklungsdokument Abschnitt 9)
 

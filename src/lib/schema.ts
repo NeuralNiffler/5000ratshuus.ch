@@ -129,34 +129,50 @@ const kennzahlSchema = z.object({
 });
 
 /** Frontmatter von artikel.md, siehe Entwicklungsdokument F4 und Templates A/B. */
-export const ArtikelFrontmatterSchema = z.object({
-  slug: asciiSlug,
-  template: z.enum(TEMPLATES),
-  headline: z.string().min(1),
-  kategorie: z.enum(KATEGORIEN),
-  datePublished: isoDate,
-  korrekturen: z.array(korrekturSchema).default([]),
-  description: z.string().min(1).max(300),
-  ogDescription: z.string().min(1).max(300).optional(),
-  keywords: z.array(z.string().min(1)).min(1),
-  /** isBasedOn im JSON-LD: die amtliche Publikation bzw. Medienmitteilung. */
-  quelleAmtlich: z.url(),
-  about: z.array(z.string().min(1)).default([]),
-  newsletter: z.object({
-    betreff: z.string().min(1),
-    /** Lesbares Datum wie im Newsletter-Versand, z. B. "28.08.2026". */
-    datum: z.string().min(1),
-    messageId: z.string().optional(),
-  }),
-  sitzungsdatum: isoDate.optional(),
-  /** Zusätzliche, frei formulierte Meta-Zeilen-Angaben, z. B. "Steuerfuss: 96 %". */
-  metaZeile: z.array(z.string().min(1)).default([]),
-  kennzahlen: z.array(kennzahlSchema).optional(),
-  /** Badge "Budgetiert, nicht effektiv" auf Artikelebene (v. a. Template B). */
-  forecast: z.boolean().default(false),
-  backfill: z.boolean().default(false),
-  entstehung: z.enum(ENTSTEHUNG),
-});
+export const ArtikelFrontmatterSchema = z
+  .object({
+    slug: asciiSlug,
+    template: z.enum(TEMPLATES),
+    headline: z.string().min(1),
+    kategorie: z.enum(KATEGORIEN),
+    datePublished: isoDate,
+    korrekturen: z.array(korrekturSchema).default([]),
+    description: z.string().min(1).max(300),
+    ogDescription: z.string().min(1).max(300).optional(),
+    keywords: z.array(z.string().min(1)).min(1),
+    /** isBasedOn im JSON-LD: die amtliche Publikation bzw. Medienmitteilung. */
+    quelleAmtlich: z.url(),
+    about: z.array(z.string().min(1)).default([]),
+    newsletter: z.object({
+      betreff: z.string().min(1),
+      /** Lesbares Datum wie im Newsletter-Versand, z. B. "28.08.2026". */
+      datum: z.string().min(1),
+      messageId: z.string().optional(),
+    }),
+    sitzungsdatum: isoDate.optional(),
+    /** Zusätzliche, frei formulierte Meta-Zeilen-Angaben, z. B. "Steuerfuss: 96 %". */
+    metaZeile: z.array(z.string().min(1)).default([]),
+    kennzahlen: z.array(kennzahlSchema).optional(),
+    /** Badge "Budgetiert, nicht effektiv" auf Artikelebene (v. a. Template B). */
+    forecast: z.boolean().default(false),
+    backfill: z.boolean().default(false),
+    entstehung: z.enum(ENTSTEHUNG),
+  })
+  .superRefine((data, ctx) => {
+    // Pipeline-erzeugte Ausgaben (Phase 1c) brauchen newsletter.messageId für
+    // die Idempotenz-Prüfung (F1): ohne sie könnte dieselbe Newsletter-Ausgabe
+    // unbemerkt doppelt verarbeitet werden. Manuell erzeugte Ausgaben (Phase
+    // 1a/1b, Backfill) haben oft keine Message-ID zur Hand, deshalb bleibt das
+    // Feld dort optional.
+    if (data.entstehung === "pipeline" && !data.newsletter.messageId) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["newsletter", "messageId"],
+        message:
+          'newsletter.messageId ist für automatisiert erzeugte Ausgaben (entstehung: "pipeline") verbindlich, für die Idempotenz-Prüfung der Pipeline.',
+      });
+    }
+  });
 export type ArtikelFrontmatter = z.infer<typeof ArtikelFrontmatterSchema>;
 
 /** Eine vollständig eingelesene und geprüfte Ausgabe: Artikel plus Geschäfte. */

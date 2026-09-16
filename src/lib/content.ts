@@ -32,8 +32,8 @@ const CONTENT_DIR = join(process.cwd(), "src/content/ausgaben");
 
 let cache: Ausgabe[] | null = null;
 
-function readAusgabeOrdner(ordner: string): Ausgabe {
-  const dir = join(CONTENT_DIR, ordner);
+export function readAusgabeOrdner(ordner: string, baseDir: string = CONTENT_DIR): Ausgabe {
+  const dir = join(baseDir, ordner);
   const artikelPath = join(dir, "artikel.md");
   const geschaeftePath = join(dir, "geschaefte.json");
 
@@ -85,14 +85,19 @@ function readAusgabeOrdner(ordner: string): Ausgabe {
     ids.add(g.id);
   }
 
-  // Harte Prüfung, unabhängig von Abschnitt 8 (die dort beschriebenen acht
-  // Prüfungen folgen erst in Phase 1b): kein Fristdatum-Zeichenmuster im
-  // Fliesstext oder in den Metadaten. Das ist die einzige Ausnahme vom
-  // unbeaufsichtigten Betrieb (Abschnitt 6) und wird deshalb schon hier,
-  // beim Einlesen, hart erzwungen statt erst später.
+  // Harte Prüfung (Prüfung 1 aus Abschnitt 8/Phase 1b, siehe src/lib/checks.ts
+  // für die übrigen sieben Prüfungen): kein Fristdatum-Zeichenmuster im
+  // Fliesstext, in den Metadaten oder in den einzelnen Geschäften. Das ist
+  // die einzige Ausnahme vom unbeaufsichtigten Betrieb (Abschnitt 6) und wird
+  // deshalb schon hier, beim Einlesen, hart erzwungen statt erst später.
   assertKeinFristdatum(ordner, "description", frontmatter.description);
   assertKeinFristdatum(ordner, "ogDescription", frontmatter.ogDescription ?? "");
   assertKeinFristdatum(ordner, "artikel.md Fliesstext", bodyMarkdown);
+  for (const g of geschaefte) {
+    assertKeinFristdatum(ordner, `Geschäft "${g.id}" (titel)`, g.titel);
+    assertKeinFristdatum(ordner, `Geschäft "${g.id}" (ereignis)`, g.ereignis ?? "");
+    assertKeinFristdatum(ordner, `Geschäft "${g.id}" (kurztext)`, g.kurztext ?? "");
+  }
 
   const bodyHtml = bodyMarkdown.trim().length > 0 ? (marked.parse(bodyMarkdown) as string) : "";
 
@@ -115,8 +120,10 @@ function readAusgabeOrdner(ordner: string): Ausgabe {
  * Erkennt ein konkretes Referendumsfrist-Datum im Text. Die Regel aus
  * Abschnitt 6 verbietet jedes Datum im Kontext einer Frist, nicht nur ein
  * bestimmtes bekanntes Datum. Diese Heuristik prüft deshalb auf das Wort
- * "Referendumsfrist" oder "Unterschriften" in der Nähe eines Datumsformats.
- * Für die vollständige, robustere Prüfung siehe Phase 1b, Abschnitt 8.1.
+ * "Frist" in der Nähe eines Datumsformats (ausgeschriebener Monatsname oder
+ * ISO). Das ist Prüfung 1 aus Abschnitt 8 (Phase 1b) — die einzige der acht
+ * Prüfungen, die hart beim Einlesen statt in src/lib/checks.ts läuft, weil
+ * ein falsch übertragenes Fristdatum nicht nachträglich korrigierbar ist.
  */
 function assertKeinFristdatum(ordner: string, feld: string, text: string): void {
   const datumsMuster = /\b\d{1,2}\.\s?(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s?\d{4}\b|\b\d{4}-\d{2}-\d{2}\b/gi;
@@ -149,7 +156,7 @@ export function getAllAusgaben(): Ausgabe[] {
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name);
 
-  const ausgaben = ordner.map(readAusgabeOrdner);
+  const ausgaben = ordner.map((o) => readAusgabeOrdner(o));
 
   const slugs = new Set<string>();
   for (const a of ausgaben) {

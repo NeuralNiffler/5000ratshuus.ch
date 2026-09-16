@@ -10,6 +10,9 @@
     "prebuild": "tsx scripts/build-index.ts",
     "build": "astro build",
     "build:index": "tsx scripts/build-index.ts",
+    "check:artikel": "tsx scripts/check-artikel.ts",
+    "demo:fristdatum-block": "tsx scripts/demo-fristdatum-block.ts",
+    "pipeline:run": "tsx scripts/pipeline/run-pipeline.ts",
     "preview": "astro preview",
     "astro": "astro",
     "check": "astro check"

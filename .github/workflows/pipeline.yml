@@ -1,0 +1,141 @@
+# Pipeline (Umsetzungsplan Phase 1c, Schritte 11-16), Scope dieser Version:
+# Skript + CI-Skelett, KEIN echter Mail-Trigger. Der Trigger ist aktuell
+# ausschliesslich workflow_dispatch — Domain und Cloudflare Email Routing
+# sind noch nicht eingerichtet (offener Punkt 15, Umsetzungsplan). Sobald der
+# echte Trigger existiert, ersetzt ihn vermutlich `repository_dispatch`
+# (ausgelöst vom Mail-Worker), nicht mehr `workflow_dispatch` — die
+# `mailtext`-Eingabe ist ein manuelles Provisorium: die GitHub-UI zeigt für
+# den Eingabetyp "string" nur ein einzeiliges Textfeld, für einen mehrseitigen
+# Mailtext also eher über die API/gh CLI befüllen als über die UI eintippen.
+#
+# Noch nicht angelegte, für einen echten Lauf nötige Repo-Secrets:
+#   - ANTHROPIC_API_KEY (Voraussetzung für den Schritt "Pipeline ausführen")
+#   - ggf. CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID (Voraussetzung für
+#     den noch fehlenden Deploy-Schritt, siehe TODO unten)
+name: Pipeline (Newsletter-Ausgabe verarbeiten)
+
+on:
+  workflow_dispatch:
+    inputs:
+      mailtext:
+        description: "Klartext der Newsletter-Ausgabe"
+        required: true
+        type: string
+      betreff:
+        description: "Betreff der Newsletter-Mail"
+        required: true
+        type: string
+      newsletter_datum:
+        description: "Versanddatum wie im Newsletter, z. B. 28.08.2026"
+        required: true
+        type: string
+      message_id:
+        description: "Eindeutige Message-ID der Mail (für Idempotenz, F1)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: pipeline
+  cancel-in-progress: false
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Node einrichten
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Abhängigkeiten installieren
+        run: npm ci
+
+      # Bewusst in eine Runner-Temp-Datei statt ins Repo: Rohmails/Mailtext
+      # dürfen bei öffentlichem Repo nie committet werden (siehe
+      # docs/entscheide/2026-09-16-stack.md, Absatz zur Repo-Sichtbarkeit).
+      - name: Mailtext in Runner-Temp-Datei schreiben
+        env:
+          MAILTEXT: ${{ inputs.mailtext }}
+        run: printf '%s' "$MAILTEXT" > "$RUNNER_TEMP/mailtext.txt"
+
+      - name: Pipeline ausführen
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          npm run pipeline:run -- \
+            --mailtext-datei "$RUNNER_TEMP/mailtext.txt" \
+            --betreff "${{ inputs.betreff }}" \
+            --newsletter-datum "${{ inputs.newsletter_datum }}" \
+            --message-id "${{ inputs.message_id }}"
+
+      - name: Protokoll in Job Summary schreiben
+        if: always()
+        run: |
+          echo '### Pipeline-Protokoll' >> "$GITHUB_STEP_SUMMARY"
+          for f in .build/pipeline-log/*.json; do
+            [ -f "$f" ] || continue
+            echo '```json' >> "$GITHUB_STEP_SUMMARY"
+            cat "$f" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          done
+
+      # Direkter Push statt PR: konsistent mit dem bereits getroffenen
+      # Entscheid "autonome Publikation ohne Freigabeschritt" (Abschnitt 13).
+      # Nur Dateien unter src/content/ausgaben/ committen — bei "aussortiert"
+      # oder "uebersprungen_bereits_vorhanden" gibt es nichts Neues, der
+      # Commit wird dann übersprungen statt einen leeren zu erzeugen.
+      - name: Neue Ausgabe committen und pushen
+        if: success()
+        run: |
+          git config user.name "5000ratshuus-pipeline[bot]"
+          git config user.email "actions@users.noreply.github.com"
+          git add src/content/ausgaben/
+          if git diff --cached --quiet; then
+            echo "Keine neuen Dateien zu committen (Ausgabe vermutlich aussortiert oder bereits vorhanden)."
+          else
+            git commit -m "Automatisch erzeugte Ausgabe: ${{ inputs.betreff }}"
+            git push
+          fi
+
+      - name: Entwurf als Artifact hochladen (bei Fehlschlag)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-entwurf-${{ github.run_id }}
+          path: |
+            src/content/ausgaben/
+            .build/pipeline-log/
+          retention-days: 14
+          if-no-files-found: warn
+
+      # Nutzt nur den Standard-GITHUB_TOKEN, kein zusätzlicher
+      # Benachrichtigungsdienst nötig (Schritt 15: "Robin bei Fehlern
+      # benachrichtigen").
+      - name: Bei Fehlschlag ein Issue erstellen
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          protokoll=$(cat .build/pipeline-log/*.json 2>/dev/null || echo "Kein Protokoll gefunden.")
+          gh issue create \
+            --title "Pipeline-Fehler: ${{ inputs.betreff }}" \
+            --label "pipeline-fehler" \
+            --body "Lauf: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          Protokoll:
+          \`\`\`json
+          $protokoll
+          \`\`\`"
+
+# TODO: Deploy aktivieren, sobald Cloudflare-Hosting eingerichtet ist
+# (Umsetzungsplan Punkt 14). Offen: läuft der Deploy über Cloudflares eigene
+# Git-Integration (kein Workflow-Schritt nötig) oder über einen expliziten
+# `wrangler deploy`-Schritt hier? Erst entscheidbar, sobald das
+# Cloudflare-Projekt existiert.

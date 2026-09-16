@@ -3,6 +3,11 @@ dist/
 .astro/
 .build/
 
+# Lokale Testdaten für die Pipeline (Phase 1c): können Rohmail-Auszüge mit
+# personenbezogenen Daten (Abmeldelinks) enthalten, dürfen bei öffentlichem
+# Repo nie committet werden (siehe docs/entscheide/2026-09-16-stack.md).
+pipeline-testdaten/
+
 # Lokaler Cloudflare-Worker-Entwicklungsstand (wrangler dev / miniflare)
 .wrangler/
 
