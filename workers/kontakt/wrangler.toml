@@ -14,7 +14,7 @@ routes = [
 # Muss in Cloudflare Email Routing als "verifizierte Zieladresse" hinterlegt
 # sein, sonst schlägt der Versand über das send_email-Binding fehl.
 [vars]
-KONTAKT_ZIEL_ADRESSE = "[NOCH FESTZULEGEN]"
+KONTAKT_ZIEL_ADRESSE = "robin.andreas.schmid+5000ratshuus@gmail.com"
 ABSENDER_ADRESSE = "kontaktformular@5000ratshuus.ch"
 
 # Erst wirksam, sobald die Domain auf Cloudflare läuft und Email Routing
