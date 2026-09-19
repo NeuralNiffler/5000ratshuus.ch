@@ -1,0 +1,16 @@
+{
+  // Statische Seite (Astro-Output) über Workers Static Assets.
+  // Der Name muss mit dem Projektnamen in Cloudflare (Workers & Pages) übereinstimmen,
+  // sonst schlägt der Build mit "name mismatch" fehl.
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "5000ratshuus-ch",
+  "compatibility_date": "2026-01-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  },
+  // Custom Domain: Cloudflare legt den DNS-Eintrag selbst an. Der Kontakt-Worker
+  // (workers/kontakt) hängt als Route auf /api/kontakt davor; Routen haben
+  // Vorrang vor Custom Domains.
+  "routes": [{ "pattern": "5000ratshuus.ch", "custom_domain": true }]
+}

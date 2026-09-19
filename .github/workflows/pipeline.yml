@@ -10,8 +10,7 @@
 #
 # Noch nicht angelegte, für einen echten Lauf nötige Repo-Secrets:
 #   - ANTHROPIC_API_KEY (Voraussetzung für den Schritt "Pipeline ausführen")
-#   - ggf. CLOUDFLARE_API_TOKEN / CLOUDFLARE_ACCOUNT_ID (Voraussetzung für
-#     den noch fehlenden Deploy-Schritt, siehe TODO unten)
+#   - (kein Cloudflare-Token nötig: der Deploy läuft über die Git-Integration)
 name: Pipeline (Newsletter-Ausgabe verarbeiten)
 
 on:
@@ -134,8 +133,6 @@ jobs:
           $protokoll
           \`\`\`"
 
-# TODO: Deploy aktivieren, sobald Cloudflare-Hosting eingerichtet ist
-# (Umsetzungsplan Punkt 14). Offen: läuft der Deploy über Cloudflares eigene
-# Git-Integration (kein Workflow-Schritt nötig) oder über einen expliziten
-# `wrangler deploy`-Schritt hier? Erst entscheidbar, sobald das
-# Cloudflare-Projekt existiert.
+# Deploy: läuft über die Git-Integration von Cloudflare (Workers Builds). Jeder
+# Push auf main, auch der Commit dieser Pipeline, löst dort Build und Deploy
+# aus. Hier ist deshalb kein Deploy-Schritt und kein CLOUDFLARE_API_TOKEN nötig.

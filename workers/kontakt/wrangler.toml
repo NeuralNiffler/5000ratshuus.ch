@@ -4,6 +4,12 @@ compatibility_date = "2026-01-01"
 # mimetext (für den E-Mail-Aufbau) braucht Node-Polyfills für "path" u. a.
 compatibility_flags = ["nodejs_compat"]
 
+# Das Formular postet an /api/kontakt auf der Hauptdomain. Die Route hat
+# Vorrang vor der Custom Domain der statischen Seite (Wrangler im Repo-Root).
+routes = [
+  { pattern = "5000ratshuus.ch/api/kontakt", zone_name = "5000ratshuus.ch" }
+]
+
 # Zieladresse für Kontaktmeldungen (siehe Plan, Frage C4 "zu definieren").
 # Muss in Cloudflare Email Routing als "verifizierte Zieladresse" hinterlegt
 # sein, sonst schlägt der Versand über das send_email-Binding fehl.
