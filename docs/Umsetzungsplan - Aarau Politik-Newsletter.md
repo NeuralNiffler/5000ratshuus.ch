@@ -72,10 +72,6 @@ Nicht bauen. Zuerst klären, ob die Urheberschaft pro Vorstoss strukturiert erfa
 |---|---|---|---|
 | 1 | Leserschaft ausserhalb von Robin | Sinn des Baus | Test aus Schritt 1 |
 | 2 | Erfolgs- und Abbruchkriterium, Budget | Start des Experiments | Vor dem Test festhalten |
-| 4 | Name und Domain | Impressum, Branding | 5000 Rathuus Post, Rathuus5000, 5000 Rathuus |
-| 5 | Dienst für das Kontaktformular | Abnahme Phase 1 | Mit dem Stack-Vorschlag |
-| 6 | Impressum und Verantwortlichkeit | Live-Gang | Laut Praxisquellen zielt die gesetzliche Pflicht vor allem auf kommerzielle Angebote. Ob Robin mit vollem Namen auftritt, ist sein Entscheid. Keine Rechtsberatung. Quelle: https://www.cyon.ch/blog/impressum-websites |
-| 7 | Datenschutzhinweis zum Kontaktformular | Live-Gang | Das Formular sammelt Personendaten, ein Hinweis ist vermutlich nötig. Nicht verifiziert. |
 | 8 | Urheberrecht an amtlichen Texten | Live-Gang | Art. 5 URG nimmt amtliche Erlasse, Protokolle und Berichte von Behörden vom Schutz aus. Ob Medienmitteilungen darunter fallen, ist offen. Quelle: https://www.rechtundgesetz.ch/15_76_309_URG_gesetzestexte_artikel_5_Art_5_Nicht_geschuetzte_Werke.html |
 | 9 | Gmail-Zugang für den Backfill | Phase 2 | Der laufende Betrieb braucht keinen Gmail-Zugang mehr. Für den Backfill einmalig lokal auf Gmail zugreifen. |
 | 10 | Modellkosten pro Ausgabe | Budget | Beim ersten Lauf messen |
@@ -83,10 +79,14 @@ Nicht bauen. Zuerst klären, ob die Urheberschaft pro Vorstoss strukturiert erfa
 | 12 | Skill auf Automatik umstellen | Variante C | Workflow-Schritt 6 im Skill nennt noch "manueller Test-Workflow" |
 | 13 | Einordnung und Meinungsebene | Nichts | Artikel bleiben vorerst neutral |
 | 14 | Wahlhilfe: Datenlage pro Vorstoss | Phase 3 | Unvalidiert |
-| 15 | Dienst für eingehende Mails und Empfangsadresse | Phase 1c | Mit dem Stack-Vorschlag, Kandidaten Cloudflare Email Workers oder Postmark Inbound. `[Annahme]` Der Newsletter der Stadt lässt sich mit jeder Adresse abonnieren, beim Abo prüfen. |
+| 15 | Empfangsadresse und Abo beim Newsletter der Stadt | Phase 1c | Dienst entschieden (Cloudflare Email Routing + Email Worker, `workers/eingang/`), Worker gebaut, noch nicht deployt. Offen: `newsletter@5000ratshuus.ch` in Email Routing auf den Worker legen und den Newsletter darauf abonnieren. `[Annahme]` Der Newsletter der Stadt lässt sich mit jeder Adresse abonnieren, beim Abo prüfen. Bereinigung und Header-Prüfung sind erst mit der ersten echten Mail verifizierbar. |
 
 ---
 
 _Erstellt am 2026-09-16 aus dem Entwicklungsdokument, dem Projekt-`MEMORY.md` und dem Skill `aarau-newsletter-artikel`. Wenn ein offener Punkt entschieden ist, die Zeile hier entfernen und den Entscheid unter Key Decisions im Projekt-`MEMORY.md` ablegen. Änderungen hier datiert notieren: `[YYYY-MM-DD] was geändert wurde`._
 
 _[2026-09-16] Architekturrichtung entschieden: Phase 0 Schritt 3 als erledigt markiert, Schritte 5, 10 und 17 angepasst, offenen Punkt 3 entfernt, Punkt 9 auf den Backfill umgestellt, Punkt 15 zum Maildienst ergänzt._
+
+_[2026-09-19] Live auf 5000ratshuus.ch (Cloudflare). Offene Punkte 4, 5, 6 und 7 entfernt: Name/Domain 5000ratshuus.ch, Kontaktformular über eigenen Cloudflare Worker, Impressum mit vollem Namen (Robin Schmid, Aarau), Datenschutzhinweis geschrieben._
+
+_[2026-09-19] Schritt 10 gebaut, noch nicht deployt: Email Worker `workers/eingang/` (Absenderprüfung, Bereinigung, `repository_dispatch`), `pipeline.yml` startet auch über `repository_dispatch` und übergibt Mail-Werte nur noch über `env:` (Schutz gegen Script-Injection), Alarm `ausbleibende-ausgabe.yml` (Issue und damit E-Mail, wenn die jüngste Ausgabe älter als 7 Tage ist). Punkt 15 auf den Restbestand gekürzt. Später optional: Umstieg von `ANTHROPIC_API_KEY` auf Workload Identity Federation._

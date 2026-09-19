@@ -1,19 +1,28 @@
-# Pipeline (Umsetzungsplan Phase 1c, Schritte 11-16), Scope dieser Version:
-# Skript + CI-Skelett, KEIN echter Mail-Trigger. Der Trigger ist aktuell
-# ausschliesslich workflow_dispatch — Domain und Cloudflare Email Routing
-# sind noch nicht eingerichtet (offener Punkt 15, Umsetzungsplan). Sobald der
-# echte Trigger existiert, ersetzt ihn vermutlich `repository_dispatch`
-# (ausgelöst vom Mail-Worker), nicht mehr `workflow_dispatch` — die
-# `mailtext`-Eingabe ist ein manuelles Provisorium: die GitHub-UI zeigt für
-# den Eingabetyp "string" nur ein einzeiliges Textfeld, für einen mehrseitigen
-# Mailtext also eher über die API/gh CLI befüllen als über die UI eintippen.
+# Pipeline (Umsetzungsplan Phase 1c, Schritte 11-16).
 #
-# Noch nicht angelegte, für einen echten Lauf nötige Repo-Secrets:
-#   - ANTHROPIC_API_KEY (Voraussetzung für den Schritt "Pipeline ausführen")
+# Zwei Auslöser:
+#   - repository_dispatch (Typ "newsletter-eingang"): der Regelfall. Der
+#     Email Worker (workers/eingang/) ruft ihn auf, sobald eine Mail von
+#     kommunikation@aarau.ch an newsletter@5000ratshuus.ch eintrifft. Die
+#     Nutzdaten stehen in github.event.client_payload.
+#   - workflow_dispatch: manueller Notausgang, z. B. um eine Ausgabe nachzuholen
+#     oder die Pipeline zu testen. Für einen mehrseitigen Mailtext eher über
+#     die API/gh CLI befüllen: die GitHub-UI zeigt für den Eingabetyp "string"
+#     nur ein einzeiliges Textfeld.
+#
+# Sicherheit: Betreff und Mailtext stammen aus einer externen Mail. Sie
+# werden deshalb NIE per ${{ ... }} in ein run:-Skript eingesetzt (das wäre
+# eine Script-Injection-Lücke), sondern nur über env: als Umgebungsvariablen
+# übergeben und in der Shell in Anführungszeichen verwendet.
+#
+# Nötige Repo-Secrets:
+#   - ANTHROPIC_API_KEY (Schritt "Pipeline ausführen")
 #   - (kein Cloudflare-Token nötig: der Deploy läuft über die Git-Integration)
 name: Pipeline (Newsletter-Ausgabe verarbeiten)
 
 on:
+  repository_dispatch:
+    types: [newsletter-eingang]
   workflow_dispatch:
     inputs:
       mailtext:
@@ -44,6 +53,13 @@ concurrency:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
+    # Je nach Auslöser stehen die Werte in inputs (manuell) oder client_payload
+    # (Email Worker). Einmal hier vereinheitlichen, danach nur noch $VARIABLEN.
+    env:
+      MAILTEXT: ${{ inputs.mailtext || github.event.client_payload.mailtext }}
+      BETREFF: ${{ inputs.betreff || github.event.client_payload.betreff }}
+      NEWSLETTER_DATUM: ${{ inputs.newsletter_datum || github.event.client_payload.newsletter_datum }}
+      MESSAGE_ID: ${{ inputs.message_id || github.event.client_payload.message_id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -60,8 +76,6 @@ jobs:
       # dürfen bei öffentlichem Repo nie committet werden (siehe
       # docs/entscheide/2026-09-16-stack.md, Absatz zur Repo-Sichtbarkeit).
       - name: Mailtext in Runner-Temp-Datei schreiben
-        env:
-          MAILTEXT: ${{ inputs.mailtext }}
         run: printf '%s' "$MAILTEXT" > "$RUNNER_TEMP/mailtext.txt"
 
       - name: Pipeline ausführen
@@ -70,9 +84,9 @@ jobs:
         run: |
           npm run pipeline:run -- \
             --mailtext-datei "$RUNNER_TEMP/mailtext.txt" \
-            --betreff "${{ inputs.betreff }}" \
-            --newsletter-datum "${{ inputs.newsletter_datum }}" \
-            --message-id "${{ inputs.message_id }}"
+            --betreff "$BETREFF" \
+            --newsletter-datum "$NEWSLETTER_DATUM" \
+            --message-id "$MESSAGE_ID"
 
       - name: Protokoll in Job Summary schreiben
         if: always()
@@ -99,7 +113,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Keine neuen Dateien zu committen (Ausgabe vermutlich aussortiert oder bereits vorhanden)."
           else
-            git commit -m "Automatisch erzeugte Ausgabe: ${{ inputs.betreff }}"
+            git commit -m "Automatisch erzeugte Ausgabe: $BETREFF"
             git push
           fi
 
@@ -116,22 +130,30 @@ jobs:
 
       # Nutzt nur den Standard-GITHUB_TOKEN, kein zusätzlicher
       # Benachrichtigungsdienst nötig (Schritt 15: "Robin bei Fehlern
-      # benachrichtigen").
+      # benachrichtigen"). Der Text geht über eine Datei, nicht über eine
+      # Shell-Zeichenkette: das Protokoll enthält den (externen) Betreff.
       - name: Bei Fehlschlag ein Issue erstellen
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
+          LAUF_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
-          protokoll=$(cat .build/pipeline-log/*.json 2>/dev/null || echo "Kein Protokoll gefunden.")
+          {
+            echo "Lauf: $LAUF_URL"
+            echo
+            echo "Protokoll:"
+            echo '```json'
+            cat .build/pipeline-log/*.json 2>/dev/null || echo "Kein Protokoll gefunden."
+            echo '```'
+          } > "$RUNNER_TEMP/issue.md"
+          # Ohne vorhandenes Label schlägt "gh issue create --label" fehl,
+          # der Alarm bliebe genau im Fehlerfall aus.
+          gh label create pipeline-fehler --color B60205 \
+            --description "Fehler in der Newsletter-Pipeline" 2>/dev/null || true
           gh issue create \
-            --title "Pipeline-Fehler: ${{ inputs.betreff }}" \
+            --title "Pipeline-Fehler: $BETREFF" \
             --label "pipeline-fehler" \
-            --body "Lauf: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-
-          Protokoll:
-          \`\`\`json
-          $protokoll
-          \`\`\`"
+            --body-file "$RUNNER_TEMP/issue.md"
 
 # Deploy: läuft über die Git-Integration von Cloudflare (Workers Builds). Jeder
 # Push auf main, auch der Commit dieser Pipeline, löst dort Build und Deploy

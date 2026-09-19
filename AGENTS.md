@@ -30,6 +30,13 @@ Dev-Server im Hintergrund starten: `astro dev --background`, verwaltet mit
 Der Kontakt-Worker liegt separat in `workers/kontakt/` mit eigenem
 `package.json`. Lokal testen: `cd workers/kontakt && npm install && npm run dev`.
 
+Der Mail-Eingang (Email Worker, Newsletter-Mail → `repository_dispatch` →
+`.github/workflows/pipeline.yml`) liegt in `workers/eingang/`, ebenfalls mit
+eigenem `package.json`. Wrangler immer mit `-c wrangler.toml` aufrufen (die
+npm-Skripte tun das), sonst nimmt es die `wrangler.jsonc` im Repo-Root. Werte
+aus der Mail (Betreff, Text) im Workflow nie per `${{ ... }}` in `run:`
+einsetzen, nur über `env:` (Script-Injection).
+
 ## Astro-Dokumentation
 
 Vor Arbeiten an den folgenden Themen konsultieren:

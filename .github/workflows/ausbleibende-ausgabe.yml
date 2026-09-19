@@ -1,0 +1,75 @@
+# Alarm gegen den stillen Ausfall des Mail-Eingangs (Entwicklungsdokument F1
+# und Abschnitt 13, Umsetzungsplan Schritt 10): Läuft das Newsletter-Abo aus
+# oder fällt der Email Worker aus, entsteht kein Fehler, es kommt einfach
+# nichts mehr an. Dieser Workflow prüft wöchentlich, wie alt die jüngste
+# Ausgabe ist, und öffnet ein Issue, wenn sie älter als MAX_TAGE ist. GitHub
+# schickt dazu eine E-Mail an alle, die das Repository beobachten (als
+# Besitzer standardmässig Robin; Einstellung: GitHub → Settings →
+# Notifications).
+#
+# Schwelle 7 Tage (Entscheid Robin): Newsletter ohne Beschluss- oder
+# Themenbezug werden aussortiert und erzeugen keinen Artikel. Eine Woche
+# ohne Artikel kann also legitim sein, das Issue sagt deshalb nur "bitte
+# prüfen". Pro Zeitraum gibt es höchstens ein offenes Issue.
+name: Ausbleibende Ausgabe melden
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # montags, 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+env:
+  MAX_TAGE: "7"
+
+jobs:
+  pruefen:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Alter der jüngsten Ausgabe prüfen
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          neueste=$(grep -h -m1 '^datePublished:' src/content/ausgaben/*/artikel.md \
+            | sed -E 's/.*"([0-9]{4}-[0-9]{2}-[0-9]{2})".*/\1/' | sort | tail -1)
+          if [ -z "$neueste" ]; then
+            echo "Keine Ausgabe mit datePublished gefunden." >&2
+            exit 1
+          fi
+          alter=$(( ( $(date +%s) - $(date -d "$neueste" +%s) ) / 86400 ))
+          echo "Jüngste Ausgabe: $neueste ($alter Tage alt, Schwelle $MAX_TAGE)"
+
+          if [ "$alter" -le "$MAX_TAGE" ]; then
+            exit 0
+          fi
+
+          gh label create ausbleibende-ausgabe --color FBCA04 \
+            --description "Seit längerer Zeit keine neue Ausgabe" 2>/dev/null || true
+          offen=$(gh issue list --label ausbleibende-ausgabe --state open --json number --jq length)
+          if [ "$offen" -gt 0 ]; then
+            echo "Es ist bereits ein Issue offen, kein zweites."
+            exit 0
+          fi
+
+          {
+            echo "Die jüngste Ausgabe ist vom $neueste, also $alter Tage alt (Schwelle: $MAX_TAGE Tage)."
+            echo
+            echo "Das kann normal sein, wenn alle Newsletter aussortiert wurden. Bitte prüfen:"
+            echo
+            echo "- Läuft das Newsletter-Abo der Stadt Aarau noch (Bestätigungs- oder Abmeldemails)?"
+            echo "- Cloudflare → Email Routing: ist die Regel für newsletter@5000ratshuus.ch aktiv?"
+            echo "- Worker \`5000ratshuus-eingang\`: Logs mit \`npx wrangler tail -c wrangler.toml\`."
+            echo "- GitHub → Actions → Pipeline: gab es Läufe, wurden sie aussortiert?"
+            echo
+            echo "Dieses Issue nach der Prüfung schliessen, sonst gibt es keinen neuen Alarm."
+          } > "$RUNNER_TEMP/issue.md"
+          gh issue create \
+            --title "Seit $alter Tagen keine neue Ausgabe" \
+            --label ausbleibende-ausgabe \
+            --body-file "$RUNNER_TEMP/issue.md"

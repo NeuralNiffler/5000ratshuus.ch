@@ -1,0 +1,22 @@
+name = "5000ratshuus-eingang"
+main = "src/index.ts"
+compatibility_date = "2026-01-01"
+
+# Kein Route-Eintrag: der Worker hat keine HTTP-Schnittstelle. Er wird nur
+# über Cloudflare Email Routing aufgerufen (Cloudflare-Dashboard → Email →
+# Email Routing → Routing rules → newsletter@5000ratshuus.ch → "Send to a
+# Worker" → 5000ratshuus-eingang).
+
+[vars]
+# Nur Mails mit diesem Absender (Header "From") lösen die Pipeline aus.
+ERLAUBTER_ABSENDER = "kommunikation@aarau.ch"
+# Alles andere (Bestätigungsmail beim Abo, Fremdabsender, zu grosse oder
+# nicht auslieferbare Mails) geht unverändert hierhin. Muss in Cloudflare
+# Email Routing als verifizierte Zieladresse hinterlegt sein (ist sie bereits,
+# wegen des Kontaktformulars).
+WEITERLEITUNGS_ADRESSE = "robin.andreas.schmid+5000ratshuus@gmail.com"
+GITHUB_REPO = "NeuralNiffler/5000ratshuus.ch"
+
+# Geheimnis, nicht hier eintragen: `npx wrangler secret put GITHUB_TOKEN`
+# (fein granuliertes Token, nur dieses Repo, Berechtigung "Contents:
+# Read and write" — die repository_dispatch-Schnittstelle verlangt sie).
