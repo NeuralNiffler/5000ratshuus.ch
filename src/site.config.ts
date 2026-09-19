@@ -15,12 +15,6 @@ export const siteConfig = {
   lang: "de-CH",
   /** Pfad zur Kontaktseite, für Footer- und Disclaimer-Links. */
   contactPath: "/kontakt/",
-  /**
-   * Zieladresse für Kontaktmeldungen. Noch offen (siehe Plan, Frage C4).
-   * Platzhalter, bis entschieden. Wird vom Kontakt-Worker per Umgebungsvariable
-   * überschrieben, dieser Wert ist nur die Fallback-/Dokumentationsangabe.
-   */
-  contactEmailPlaceholder: "[NOCH FESTZULEGEN]",
   /** Disclaimer-Text, verbindlich laut Entwicklungsdokument F5. */
   disclaimer:
     "Diese Seite wird KI-gestützt betrieben. Fehler können vorkommen, bei Auffälligkeiten bitte über das Kontaktformular melden.",
