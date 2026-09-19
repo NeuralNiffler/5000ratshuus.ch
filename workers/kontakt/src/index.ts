@@ -7,13 +7,11 @@ import { createMimeMessage, Mailbox } from "mimetext";
  * verwirft mutmassliche Bot-Anfragen und schickt eine Meldung per
  * `send_email`-Binding an die verifizierte Zieladresse.
  *
- * Deploy und Domain sind noch nicht eingerichtet: Bis dahin schlägt der
- * echte E-Mail-Versand fehl (kein Email Routing), lokal mit `wrangler dev`
- * ist aber die gesamte Validierungs- und Redirect-Logik testbar. Ein
- * Sendefehler wird dann nur protokolliert, nicht dem Absender/der
- * Absenderin gezeigt — das vermeidet Rückschlüsse für Spam-Bots. Echte
- * Fehlerbehandlung (z. B. Robin bei dauerhaftem Sendefehler benachrichtigen)
- * ist erst mit dem Deploy sinnvoll umsetzbar und deshalb nicht Teil von 1a.
+ * Lokal mit `wrangler dev` ist die gesamte Validierungs- und Redirect-Logik
+ * testbar, der echte E-Mail-Versand braucht Email Routing auf der Domain. Ein
+ * Sendefehler wird nur protokolliert, nicht dem Absender/der Absenderin
+ * gezeigt — das vermeidet Rückschlüsse für Spam-Bots. Echte Fehlerbehandlung
+ * (z. B. Robin bei dauerhaftem Sendefehler benachrichtigen) ist noch offen.
  */
 
 export interface Env {

@@ -17,8 +17,7 @@ routes = [
 KONTAKT_ZIEL_ADRESSE = "robin.andreas.schmid+5000ratshuus@gmail.com"
 ABSENDER_ADRESSE = "kontaktformular@5000ratshuus.ch"
 
-# Erst wirksam, sobald die Domain auf Cloudflare läuft und Email Routing
-# eingerichtet ist (Phase 1c-Vorbereitung). Bis dahin schlägt send() im
-# lokalen `wrangler dev` fehl, das Worker-Handling selbst ist aber testbar.
+# Braucht Cloudflare Email Routing auf der Domain. Im lokalen `wrangler dev`
+# schlägt send() fehl, das Worker-Handling selbst ist aber testbar.
 [[send_email]]
 name = "KONTAKT_MAIL"

@@ -32,10 +32,9 @@ wegnehmen." Daraus folgt:
 
 ## Konsequenz für die Autorenfrage im Impressum
 
-Das Impressum bleibt vorerst mit Platzhalter (siehe offener Punkt 6 im
-Entwicklungsdokument). Dieser Entscheid regelt nur die *sichtbare
-Autorenangabe pro Artikel*, nicht die rechtliche Verantwortlichkeit im
-Impressum — das ist ein separater, noch offener Punkt.
+Das Impressum nennt seit 2026-09-19 Robin Schmid, Aarau, als Betreiber.
+Dieser Entscheid regelt nur die *sichtbare Autorenangabe pro Artikel*, nicht
+die Verantwortlichkeit im Impressum.
 
 ## Verworfen
 
