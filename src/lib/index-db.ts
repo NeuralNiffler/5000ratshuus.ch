@@ -242,4 +242,52 @@ export function getAlleGeschaefte(): ArchivEintrag[] {
   });
 }
 
+export function getDistinctJahre(): string[] {
+  return withDb((db) =>
+    (
+      db
+        .prepare(
+          `SELECT DISTINCT substr(publikationsdatum, 1, 4) AS jahr FROM geschaefte ORDER BY jahr DESC`,
+        )
+        .all() as { jahr: string }[]
+    ).map((r) => r.jahr),
+  );
+}
+
+export function getDistinctMonateFuerJahr(jahr: string): string[] {
+  return withDb((db) =>
+    (
+      db
+        .prepare(
+          `SELECT DISTINCT substr(publikationsdatum, 6, 2) AS monat FROM geschaefte WHERE substr(publikationsdatum, 1, 4) = ? ORDER BY monat DESC`,
+        )
+        .all(jahr) as { monat: string }[]
+    ).map((r) => r.monat),
+  );
+}
+
+export function getGeschaefteByJahr(jahr: string): ArchivEintrag[] {
+  return withDb((db) => {
+    const rows = db
+      .prepare(
+        `SELECT * FROM geschaefte WHERE substr(publikationsdatum, 1, 4) = ? ORDER BY publikationsdatum DESC`,
+      )
+      .all(jahr) as any[];
+    const { tags, quellen } = ladeZusatzdaten(db, rows.map((r) => r.row_id));
+    return rows.map((r) => mapRow(r, tags, quellen));
+  });
+}
+
+export function getGeschaefteByJahrMonat(jahr: string, monat: string): ArchivEintrag[] {
+  return withDb((db) => {
+    const rows = db
+      .prepare(
+        `SELECT * FROM geschaefte WHERE substr(publikationsdatum, 1, 4) = ? AND substr(publikationsdatum, 6, 2) = ? ORDER BY publikationsdatum DESC`,
+      )
+      .all(jahr, monat) as any[];
+    const { tags, quellen } = ladeZusatzdaten(db, rows.map((r) => r.row_id));
+    return rows.map((r) => mapRow(r, tags, quellen));
+  });
+}
+
 export { GESCHAEFT_ART_LABEL };

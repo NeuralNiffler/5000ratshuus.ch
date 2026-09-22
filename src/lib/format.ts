@@ -25,6 +25,11 @@ export function formatDatumKurz(iso: string): string {
   return `${tag}.${monat}.${jahr}`;
 }
 
+/** "08", "2026" -> "August 2026" */
+export function formatMonatJahr(monat: string, jahr: string): string {
+  return `${MONATE[Number(monat) - 1]} ${jahr}`;
+}
+
 /**
  * ASCII-Slug für Archiv-URLs, z. B. Themen-Tags. Gleiche Regel wie für
  * Artikel-Slugs: ä→ae, ö→oe, ü→ue, kein Eszett, kein Umlaut in der URL.

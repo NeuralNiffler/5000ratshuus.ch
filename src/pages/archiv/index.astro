@@ -1,13 +1,20 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import GeschaeftListItem from "../../components/GeschaeftListItem.astro";
-import { getAlleGeschaefte, getDistinctTags, getDistinctArten, GESCHAEFT_ART_LABEL } from "../../lib/index-db";
+import {
+  getAlleGeschaefte,
+  getDistinctTags,
+  getDistinctArten,
+  getDistinctJahre,
+  GESCHAEFT_ART_LABEL,
+} from "../../lib/index-db";
 import { slugify } from "../../lib/format";
 import { siteConfig } from "../../site.config";
 
 const eintraege = getAlleGeschaefte();
 const tags = getDistinctTags();
 const arten = getDistinctArten();
+const jahre = getDistinctJahre();
 ---
 
 <BaseLayout
@@ -30,6 +37,12 @@ const arten = getDistinctArten();
   <nav class="archiv-nav" aria-label="Nach Art des Geschäfts">
     {arten.map((art) => (
       <a href={`/archiv/art/${art}/`}>{GESCHAEFT_ART_LABEL[art]}</a>
+    ))}
+  </nav>
+  <p class="eyebrow">Datum</p>
+  <nav class="archiv-nav" aria-label="Nach Datum">
+    {jahre.map((jahr) => (
+      <a href={`/archiv/datum/${jahr}/`}>{jahr}</a>
     ))}
   </nav>
 

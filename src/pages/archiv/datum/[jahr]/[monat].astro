@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import GeschaeftListItem from "../../../../components/GeschaeftListItem.astro";
+import {
+  getDistinctJahre,
+  getDistinctMonateFuerJahr,
+  getGeschaefteByJahrMonat,
+} from "../../../../lib/index-db";
+import { formatMonatJahr } from "../../../../lib/format";
+import { siteConfig } from "../../../../site.config";
+
+export function getStaticPaths() {
+  return getDistinctJahre().flatMap((jahr) =>
+    getDistinctMonateFuerJahr(jahr).map((monat) => ({
+      params: { jahr, monat },
+      props: { jahr, monat },
+    })),
+  );
+}
+
+const { jahr, monat } = Astro.props as { jahr: string; monat: string };
+const label = formatMonatJahr(monat, jahr);
+const eintraege = getGeschaefteByJahrMonat(jahr, monat);
+---
+
+<BaseLayout
+  title={`Archiv ${label}`}
+  description={`Alle Geschäfte aus ${label} auf ${siteConfig.name}, mit Link zur Quelle.`}
+>
+  <h1>Archiv {label}</h1>
+  <p class="page-content"><a href={`/archiv/datum/${jahr}/`}>← Zurück zu {jahr}</a></p>
+
+  <ul class="artikel-liste">
+    {eintraege.map((eintrag) => <GeschaeftListItem eintrag={eintrag} />)}
+  </ul>
+</BaseLayout>
