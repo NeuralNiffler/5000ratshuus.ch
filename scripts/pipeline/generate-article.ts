@@ -12,11 +12,34 @@
 import { writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import matter from "gray-matter";
-import { ArtikelFrontmatterSchema, GeschaeftRawSchema } from "../../src/lib/schema.ts";
+import { ArtikelFrontmatterSchema, GeschaeftRawSchema, MAX_THEMEN, THEMEN } from "../../src/lib/schema.ts";
 import { buildGenerierungsPrompt } from "./prompts.ts";
 import { rufeClaudeJsonAuf } from "./claude-client.ts";
 
 const CONTENT_DIR = join(process.cwd(), "src/content/ausgaben");
+
+/**
+ * Verwirft Themen-Tags ausserhalb von THEMEN und kürzt auf MAX_THEMEN, mit Warnung im
+ * Log. Die Pipeline läuft unbeaufsichtigt: ein erfundenes Tag soll die
+ * Ausgabe nicht verhindern, aber auch nie im Archiv landen. Alles andere
+ * bleibt der harten Schema-Prüfung überlassen.
+ */
+function bereinigeTags(item: unknown, index: number): unknown {
+  if (typeof item !== "object" || item === null || !Array.isArray((item as { tags?: unknown }).tags)) return item;
+  const roh = (item as { tags: unknown[] }).tags;
+  const erlaubt = new Set<string>(THEMEN);
+  const gueltig = [...new Set(roh.filter((t): t is string => typeof t === "string" && erlaubt.has(t)))];
+  const verworfen = roh.filter((t) => !(typeof t === "string" && erlaubt.has(t)));
+  if (verworfen.length > 0) {
+    console.warn(`Geschäft ${index}: Themen-Tags ausserhalb der Liste verworfen: ${JSON.stringify(verworfen)}`);
+  }
+  if (gueltig.length > MAX_THEMEN) {
+    console.warn(
+      `Geschäft ${index}: mehr als ${MAX_THEMEN} Themen, gekürzt auf ${JSON.stringify(gueltig.slice(0, MAX_THEMEN))}`,
+    );
+  }
+  return { ...item, tags: gueltig.slice(0, MAX_THEMEN) };
+}
 
 /** Reines ASCII, ä→ae/ö→oe/ü→ue, siehe docs/entscheide/2026-09-16-slug-regel.md. */
 function slugify(text: string): string {
@@ -113,7 +136,7 @@ export async function generiereUndSchreibeArtikel(
   }
 
   const geschaefte = geschaefteRoh.map((item, index) => {
-    const parsed = GeschaeftRawSchema.safeParse(item);
+    const parsed = GeschaeftRawSchema.safeParse(bereinigeTags(item, index));
     if (!parsed.success) {
       throw new Error(
         `Generiertes Geschäft an Index ${index} ist ungültig:\n${parsed.error.issues

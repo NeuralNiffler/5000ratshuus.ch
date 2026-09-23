@@ -6,7 +6,7 @@
     "urheber": null,
     "ereignis": null,
     "referendumspflichtig": true,
-    "tags": ["Bildung", "Finanzen"],
+    "tags": ["Bildung & Schule", "Finanzen"],
     "sitzungsdatum": "2026-08-24",
     "publikationsdatum": "2026-08-28",
     "quellen": [
@@ -26,7 +26,7 @@
     "urheber": null,
     "ereignis": null,
     "referendumspflichtig": true,
-    "tags": ["Bildung"],
+    "tags": ["Bildung & Schule", "Verwaltung & Organisation"],
     "sitzungsdatum": "2026-08-24",
     "publikationsdatum": "2026-08-28",
     "quellen": [
@@ -46,7 +46,7 @@
     "urheber": null,
     "ereignis": "Gewählt",
     "referendumspflichtig": false,
-    "tags": ["Wahlen"],
+    "tags": ["Politik"],
     "sitzungsdatum": "2026-08-24",
     "publikationsdatum": "2026-08-28",
     "quellen": [
@@ -66,7 +66,7 @@
     "urheber": null,
     "ereignis": "Gewählt",
     "referendumspflichtig": false,
-    "tags": ["Wahlen"],
+    "tags": ["Politik"],
     "sitzungsdatum": "2026-08-24",
     "publikationsdatum": "2026-08-28",
     "quellen": [
@@ -126,7 +126,7 @@
     "urheber": null,
     "ereignis": "Abgeschrieben",
     "referendumspflichtig": false,
-    "tags": ["Bildung"],
+    "tags": ["Bildung & Schule"],
     "sitzungsdatum": "2026-08-24",
     "publikationsdatum": "2026-08-28",
     "quellen": [
@@ -166,7 +166,7 @@
     "urheber": { "name": "Julius Felix und Mitunterzeichnende", "partei": null },
     "ereignis": "Aufgenommen",
     "referendumspflichtig": false,
-    "tags": ["Umwelt"],
+    "tags": ["Umwelt & Energie"],
     "sitzungsdatum": "2026-08-24",
     "publikationsdatum": "2026-08-28",
     "quellen": [

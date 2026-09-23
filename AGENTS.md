@@ -96,6 +96,10 @@ verworfene Alternativen; hier nur die Umsetzung:
   und wird korrigiert, nie übernommen.
 - **Themen-Tags** stehen immer direkt beim einzelnen Geschäft (`tags[]` im
   jeweiligen Geschäft), nie als lose Tag-Wolke ohne Zuordnung.
+  Nur Werte aus der festen Liste `THEMEN` in `src/lib/schema.ts`, höchstens
+  3 pro Geschäft. Das Thema ist das Sachgebiet, nicht der Vorgang
+  („Qualitätsüberprüfung“ oder „Sanierung“ sind nie ein Thema), siehe
+  [`docs/entscheide/2026-09-23-themen-vokabular.md`](docs/entscheide/2026-09-23-themen-vokabular.md).
 - Kein einleitender Lead-Satz unter der Überschrift, kein Wiederholen von
   Zahlen aus Meta-Zeile/Badges/Kennzahlen-Box, keine Wertung oder politische
   Einordnung, keine erfundenen Fakten oder unmarkierten Annahmen, keine

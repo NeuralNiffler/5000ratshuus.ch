@@ -54,6 +54,31 @@ export const GESCHAEFT_ART_LABEL: Record<GeschaeftArt, string> = {
 };
 
 /** Gruppe innerhalb von Template A, Abschnitt "Abschliessend entschieden". */
+/**
+ * Feste Liste der Themen-Tags. Ein Thema ist das Sachgebiet, um das es im
+ * Geschäft geht, nicht die Art des Vorgangs: eine Qualitätsüberprüfung einer
+ * Schule ist "Bildung & Schule", eine Strassensanierung "Verkehr & Mobilität".
+ * Eigennamen und Vorgangswörter gehören in Titel und Text, nie in Tags.
+ * Siehe docs/entscheide/2026-09-23-themen-vokabular.md.
+ */
+export const THEMEN = [
+  "Bildung & Schule",
+  "Finanzen",
+  "Bauen & Planung",
+  "Verkehr & Mobilität",
+  "Umwelt & Energie",
+  "Wohnen",
+  "Sicherheit & Ordnung",
+  "Gesellschaft & Soziales",
+  "Kultur, Sport & Freizeit",
+  "Verwaltung & Organisation",
+  "Politik",
+] as const;
+export type Thema = (typeof THEMEN)[number];
+
+/** Höchstzahl Themen pro Geschäft. Finanzen steht oft neben einem oder zwei Sachgebieten. */
+export const MAX_THEMEN = 3;
+
 export const GESCHAEFT_GRUPPEN = [
   "wahlen",
   "motionen-und-postulate",
@@ -103,7 +128,7 @@ export const GeschaeftRawSchema = z.object({
   urheber: urheberSchema.default(null),
   ereignis: z.string().nullable().default(null),
   referendumspflichtig: z.boolean(),
-  tags: z.array(z.string().min(1)).default([]),
+  tags: z.array(z.enum(THEMEN)).max(MAX_THEMEN, `Höchstens ${MAX_THEMEN} Themen pro Geschäft`).default([]),
   sitzungsdatum: isoDate.nullable().default(null),
   publikationsdatum: isoDate,
   quellen: z.array(quelleSchema).min(1, "Jedes Geschäft braucht mindestens eine Quelle (Prüfung 8.2)"),

@@ -9,6 +9,9 @@
  * die alten HTML-Templates aus SKILL.md. Die Kategorisierungs- und
  * Schreibregeln sind identisch, nur die Zielstruktur ist neu.
  */
+import { MAX_THEMEN, THEMEN } from "../../src/lib/schema.ts";
+
+const THEMEN_LISTE = THEMEN.map((t) => `"${t}"`).join(", ");
 
 export const KATEGORISIERUNGSREGELN = `
 - Eine Bürgermotion ist ein Bevölkerungsanliegen, keine gewöhnliche Motion.
@@ -25,7 +28,25 @@ export const KATEGORISIERUNGSREGELN = `
   Rohdaten ist ein Extraktionsfehler und wird zu "Fr."/"Franken" korrigiert,
   nie übernommen.
 - Themen-Tags stehen immer direkt beim einzelnen Geschäft (tags[]), nie als
-  lose Tag-Wolke ohne Zuordnung.
+  lose Tag-Wolke ohne Zuordnung. Pro Geschäft 1 bis ${MAX_THEMEN} Tags, ausschliesslich
+  aus dieser festen Liste: ${THEMEN_LISTE}. Keine eigenen Tags erfinden.
+- Ein Thema ist das Sachgebiet, um das es im Geschäft geht, nicht die Art
+  des Vorgangs. Wörter wie "Qualitätsüberprüfung", "Sanierung", "Verbot"
+  oder "Baurechtsvertrag" beschreiben, was passiert, und sind nie ein Thema.
+  Entscheidend ist, woran es passiert: Die Qualitätsüberprüfung einer
+  Primarschule ist "Bildung & Schule", die einer Wasserversorgung
+  "Umwelt & Energie". Eigennamen (Strassen, Gebäude, Schulen) sind ebenfalls
+  nie ein Thema.
+- Grenzfall Bauvorhaben: Strassen, Wege und Plätze sind "Verkehr & Mobilität",
+  Gebäude, Nutzungsplanung und Denkmalschutz sind "Bauen & Planung".
+- Ein Geschäft darf mehrere Sachgebiete haben, wenn es wirklich mehrere
+  betrifft (z. B. Oberstufenstandorte: "Bildung & Schule" und
+  "Bauen & Planung"). "Finanzen" steht meist neben dem Sachgebiet, für das
+  das Geld bestimmt ist, nur bei rein finanziellen Geschäften wie dem
+  Budget allein.
+- "Politik" umfasst den politischen Betrieb selbst: Wahlen und Ersatzwahlen
+  in Rat und Kommissionen, Stimmenzähler, Ratsorganisation. "Verwaltung &
+  Organisation" ist dagegen die Stadtverwaltung (z. B. WOSA-Reglement).
 - Urheberschaft (urheber) nur übernehmen, wenn die Quelle Name und ggf.
   Partei ausdrücklich nennt. Nie aus dem Kontext erschliessen.
 `.trim();
@@ -86,7 +107,7 @@ kein Begleittext) mit genau dieser Form:
       "urheber": { "name": string, "partei": string | null } | null,
       "ereignis": string | null,
       "referendumspflichtig": boolean,
-      "tags": string[],
+      "tags": string[] (1–${MAX_THEMEN} Werte aus: ${THEMEN_LISTE}),
       "sitzungsdatum": string (JJJJ-MM-TT) | null,
       "publikationsdatum": string (JJJJ-MM-TT),
       "quellen": [{ "url": string, "label": string, "typ": "botschaft" | "reglement" | "amtliche_publikation" | "sonstige" }] (mind. 1),
