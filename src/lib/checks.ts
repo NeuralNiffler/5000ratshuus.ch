@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Ausgabe } from "./schema";
 import { getCitations } from "./content";
-import { pruefeUrlsErreichbar } from "./url-check";
+import { istUnvollstaendigeDokumentUrl, pruefeUrlsErreichbar } from "./url-check";
 
 /**
  * Die acht Prüfungen vor der Publikation, Entwicklungsdokument Abschnitt 8.
@@ -64,16 +64,29 @@ function pruefeKeinReferendumsfristDatum(): PruefErgebnis {
 }
 
 async function pruefeQuellenErreichbar(ausgabe: Ausgabe, netz: boolean): Promise<PruefErgebnis> {
+  const urls = getCitations(ausgabe);
+
+  // Formprüfung zuerst und auch offline: Eine abgeschnittene Dokument-URL
+  // ist sicher kaputt, unabhängig davon, ob aarau.ch gerade antwortet.
+  const unvollstaendig = [...urls, ausgabe.frontmatter.quelleAmtlich].filter(istUnvollstaendigeDokumentUrl);
+  if (unvollstaendig.length > 0) {
+    return {
+      nr: 2,
+      name: "Jedes Geschäft hat mindestens eine erreichbare Quell-URL",
+      status: "fehlgeschlagen",
+      details: unvollstaendig.map((url) => `${url}: Dokument-URL ohne Dateiendung (abgeschnitten?)`),
+    };
+  }
+
   if (!netz) {
     return {
       nr: 2,
       name: "Jedes Geschäft hat mindestens eine erreichbare Quell-URL",
       status: "uebersprungen",
-      details: ["Netzwerkprüfung deaktiviert (--offline)."],
+      details: ["Formprüfung bestanden, Netzwerkprüfung deaktiviert (--offline)."],
     };
   }
 
-  const urls = getCitations(ausgabe);
   const ergebnisse = await pruefeUrlsErreichbar(urls);
 
   const nichtErreichbar = ergebnisse.filter((e) => e.status === "nicht_erreichbar");

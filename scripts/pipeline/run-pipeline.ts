@@ -136,6 +136,7 @@ async function main() {
       newsletterDatum,
       messageId,
       quellenText,
+      quelleUrl: quelleAufgeloest,
       datePublished: new Date().toISOString().slice(0, 10),
     });
     console.log(`Artikel geschrieben: ${generiert.artikelPfad}`);

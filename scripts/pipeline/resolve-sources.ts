@@ -45,7 +45,10 @@ export async function loeseKurzlinkAuf(url: string, opts?: { timeoutMs?: number 
  * resolveGeschaeftsquelle unten).
  */
 export function findePdfLinkFuerGeschaeft(sitzungsseiteHtml: string, geschaeftsnummer: string): string | null {
-  const linkMuster = /<a[^>]+href="([^"]+\.pdf)"[^>]*>([^<]*)<\/a>/gi;
+  // aarau.ch hängt einen Cache-Parameter an (".pdf?fp=1"), deshalb ist ein
+  // Query-String nach ".pdf" erlaubt (Stand 2026-09-23 an der Seite
+  // "Sitzungen Einwohnerrat 2026" überprüft).
+  const linkMuster = /<a[^>]+href="([^"]+\.pdf(?:\?[^"]*)?)"[^>]*>([^<]*)<\/a>/gi;
   for (const match of sitzungsseiteHtml.matchAll(linkMuster)) {
     const [, href, linktext] = match;
     if (href.includes(geschaeftsnummer) || linktext.includes(geschaeftsnummer)) {
@@ -98,4 +101,54 @@ export async function resolveGeschaeftsquelle(
     typ: "amtliche_publikation",
     erreichbarkeit: await pruefeUrlErreichbar(amtlichePublikationUrl),
   };
+}
+
+/**
+ * Normalisiert eine URL für den Vergleich: HTML-Entities im href auflösen,
+ * relativ zur Basis auflösen, Fragment entfernen. new URL() kodiert dabei
+ * Leerzeichen und Umlaute einheitlich, so dass "Auflösung" und
+ * "Aufl%C3%B6sung" als gleich gelten.
+ */
+function normalisiereUrl(roh: string, basisUrl: string): URL | null {
+  try {
+    const url = new URL(roh.replace(/&amp;/g, "&"), basisUrl);
+    url.hash = "";
+    return url;
+  } catch {
+    return null;
+  }
+}
+
+/** Alle Links aus dem Quellmaterial: href/src-Attribute (HTML) und freistehende URLs (Mailtext). */
+function extrahiereUrls(quellenText: string, basisUrl: string): Set<string> {
+  const roh: string[] = [];
+  for (const m of quellenText.matchAll(/(?:href|src)="([^"]+)"/gi)) roh.push(m[1]);
+  for (const m of quellenText.matchAll(/https?:\/\/[^\s"'<>)\]]+/gi)) roh.push(m[0].replace(/[.,;:]+$/, ""));
+
+  const bekannt = new Set<string>();
+  for (const r of roh) {
+    const url = normalisiereUrl(r, basisUrl);
+    if (!url) continue;
+    bekannt.add(url.href);
+    // Auch ohne Query-String zulassen: aarau.ch hängt Cache-Parameter wie
+    // "?fp=1" an, die für den Link selbst nicht nötig sind.
+    bekannt.add(url.origin + url.pathname);
+  }
+  return bekannt;
+}
+
+/**
+ * Herkunftsprüfung: Jede URL, die das Modell in den Artikel schreibt, muss
+ * genau so im geladenen Quellmaterial vorkommen. Sonst hat das Modell sie
+ * gekürzt oder konstruiert. Ein blosser Teilstring-Vergleich reicht nicht,
+ * weil eine abgeschnittene URL ein Präfix der echten ist; verglichen wird
+ * deshalb gegen die vollständig extrahierten Links.
+ * Gibt die URLs zurück, die nicht im Quellmaterial stehen.
+ */
+export function findeUrlsOhneHerkunft(urls: string[], quellenText: string, basisUrl: string): string[] {
+  const bekannt = extrahiereUrls(quellenText, basisUrl);
+  return urls.filter((u) => {
+    const url = normalisiereUrl(u, basisUrl);
+    return !url || !bekannt.has(url.href);
+  });
 }

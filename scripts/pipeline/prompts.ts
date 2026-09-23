@@ -76,6 +76,11 @@ export const SCHREIBREGELN = `
 - Deutsch (Schweiz): Umlaute als ö/ä/ü ausgeschrieben, kein Eszett. Slugs
   sind die einzige Ausnahme (reines ASCII, ä→ae/ö→oe/ü→ue).
 - Kein Platzhalter wie {{...}} im Ergebnis. Kein Eurozeichen.
+- URLs (quellen[].url, quelleAmtlich) nur Zeichen für Zeichen aus den
+  aufgelösten Quellen übernehmen: nie kürzen, nie selbst zusammensetzen.
+  Dokument-Links vollständig inkl. Dateiendung (".pdf"). Steht für ein
+  Geschäft kein eigener Dokument-Link in den Quellen, die amtliche Seite
+  verlinken. Links, die nicht in den Quellen stehen, lassen den Lauf scheitern.
 `.trim();
 
 export const ZIELFORMAT_BESCHREIBUNG = `

@@ -129,6 +129,19 @@ aus `src/lib/content.ts`.
    als Fehlschlag: aarau.ch liefert aktuell 403 für automatisierte Anfragen
    und teils auch im normalen Browser (Stand 2026-09-16, Ursache unklar —
    Bot-Abwehr oder Störung). Nur echte tote Links (404/5xx/Timeout) blockieren.
+   Davor läuft immer (auch mit `--offline`) eine **Formprüfung**
+   (`istUnvollstaendigeDokumentUrl()` in `url-check.ts`): Eine Dokument-URL
+   unter `/public/upload/assets/<Nr>/` ohne Dateiendung ist abgeschnitten und
+   blockiert. Grund: Bei der Netzprüfung können 403/429 einen echten 404
+   verdecken (so geschehen bei der Ausgabe 2026-08-28).
+
+**Herkunft von Links (Pipeline):** Das Modell darf URLs nur aus dem
+geladenen Quellmaterial übernehmen. `findeUrlsOhneHerkunft()` in
+`scripts/pipeline/resolve-sources.ts` vergleicht jede URL der generierten
+Ausgabe mit den Links aus Quellseite und Mailtext (normalisiert, `?fp=`
+darf fehlen); eine unbekannte oder gekürzte URL bricht den Lauf vor dem
+Schreiben ab. Manuell angelegte Links immer vollständig von der amtlichen
+Seite kopieren (Sitzungsseite des Einwohnerrats, inkl. `.pdf`).
 3. Kein Eurozeichen im Text.
 4. Kein Platzhalter aus dem Template (`{{...}}`) im Ergebnis.
 5. Anzahl der Geschäfte im Artikel entspricht der Anzahl in der amtlichen

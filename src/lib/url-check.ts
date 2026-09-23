@@ -63,6 +63,27 @@ export async function pruefeUrlErreichbar(
   }
 }
 
+/**
+ * Dokument-Links auf aarau.ch liegen unter /public/upload/assets/<Nr>/ und
+ * tragen den vollen Dokumenttitel als Dateinamen, inkl. Endung (".pdf").
+ * Fehlt die Endung, wurde die URL abgeschnitten (so geschehen bei der
+ * Ausgabe 2026-08-28: Dateiname endete mitten im Titel, Link lief auf 404).
+ * Rein formale Prüfung ohne Netzwerk, damit sie auch dann greift, wenn
+ * aarau.ch mit 403/429 antwortet und die Erreichbarkeit nicht prüfbar ist.
+ */
+const DOKUMENT_PFAD = /^\/public\/upload\/assets\/\d+\//;
+const DATEIENDUNG = /\.[a-z0-9]{2,5}$/i;
+
+export function istUnvollstaendigeDokumentUrl(url: string): boolean {
+  let pfad: string;
+  try {
+    pfad = new URL(url).pathname;
+  } catch {
+    return false; // Ungültige URLs fängt bereits das Schema (z.url()) ab.
+  }
+  return DOKUMENT_PFAD.test(pfad) && !DATEIENDUNG.test(pfad);
+}
+
 export async function pruefeUrlsErreichbar(
   urls: string[],
   opts?: { timeoutMs?: number; concurrency?: number },

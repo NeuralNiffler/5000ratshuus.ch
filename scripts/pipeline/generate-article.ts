@@ -15,6 +15,7 @@ import matter from "gray-matter";
 import { ArtikelFrontmatterSchema, GeschaeftRawSchema, MAX_THEMEN, THEMEN } from "../../src/lib/schema.ts";
 import { buildGenerierungsPrompt } from "./prompts.ts";
 import { rufeClaudeJsonAuf } from "./claude-client.ts";
+import { findeUrlsOhneHerkunft } from "./resolve-sources.ts";
 
 const CONTENT_DIR = join(process.cwd(), "src/content/ausgaben");
 
@@ -62,6 +63,8 @@ export interface GenerierungsKontext {
   messageId: string;
   /** Aufbereiteter Text der in Schritt 12 aufgelösten Quellen, geht in den Prompt. */
   quellenText: string;
+  /** Aufgelöste amtliche Seite, Basis für relative Links im Quellmaterial. */
+  quelleUrl?: string;
   /** JJJJ-MM-TT, vom aufrufenden Skript bestimmt (nicht vom Modell). */
   datePublished: string;
 }
@@ -146,6 +149,19 @@ export async function generiereUndSchreibeArtikel(
     }
     return parsed.data;
   });
+
+  // Herkunftsprüfung: Das Modell darf Links nur aus dem Quellmaterial
+  // übernehmen, nie kürzen oder selbst zusammensetzen. Abgebrochen wird vor
+  // dem Schreiben, damit keine Ausgabe mit erfundenen Links liegen bleibt.
+  const alleUrls = [parsedFrontmatter.data.quelleAmtlich, ...geschaefte.flatMap((g) => g.quellen.map((q) => q.url))];
+  const ohneHerkunft = findeUrlsOhneHerkunft(alleUrls, kontext.quellenText, kontext.quelleUrl ?? "https://www.aarau.ch/");
+  if (ohneHerkunft.length > 0) {
+    throw new Error(
+      `Generierte Ausgabe enthält URLs, die nicht im Quellmaterial stehen (gekürzt oder erfunden):\n${ohneHerkunft
+        .map((u) => `  - ${u}`)
+        .join("\n")}`,
+    );
+  }
 
   const dir = join(CONTENT_DIR, ordner);
   if (existsSync(dir)) {
