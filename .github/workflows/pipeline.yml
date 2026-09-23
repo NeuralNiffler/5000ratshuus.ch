@@ -81,6 +81,9 @@ jobs:
       - name: Pipeline ausführen
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Modellwahl: Standard ist claude-sonnet-5 (scripts/pipeline/claude-client.ts).
+          # Zum Umschalten das # entfernen. Opus 5.5 kostet pro Token doppelt so viel.
+          # ANTHROPIC_MODEL: claude-opus-5-5
         run: |
           npm run pipeline:run -- \
             --mailtext-datei "$RUNNER_TEMP/mailtext.txt" \

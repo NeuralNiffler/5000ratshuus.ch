@@ -22,7 +22,7 @@ function istGueltigeKategorie(wert: unknown): wert is AusgabeKategorie {
 
 export async function kategorisiereAusgabe(mailKlartext: string, betreff: string): Promise<KategorisierungsErgebnis> {
   const prompt = buildKategorisierungsPrompt(betreff, mailKlartext);
-  const antwort = await rufeClaudeJsonAuf(prompt, { maxTokens: 500 });
+  const antwort = await rufeClaudeJsonAuf(prompt, { maxTokens: 500, effort: "low" });
 
   if (
     typeof antwort !== "object" ||
