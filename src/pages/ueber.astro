@@ -1,0 +1,50 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../site.config";
+---
+
+<BaseLayout title="Über" description={`Wer hinter ${siteConfig.name} steht und warum es die Seite gibt.`}>
+  <h1>Über diese Seite</h1>
+  <div class="page-content">
+    <h2>Über mich</h2>
+    <p>
+      Mein Name ist Robin Schmid, ich bin ursprünglich im Stadtteil Rohr aufgewachsen und wohne seit einigen
+      Jahren im Aeschbachquartier. Aarau ist also seit langem ein Teil meines Lebens, und ich schätze diesen Mix:
+      städtisches Leben, und trotzdem kennt man seine Nachbarn noch. Mich interessiert, was politisch und
+      gesellschaftlich in Aarau läuft.
+    </p>
+
+    <h2>Anlass für diese Website</h2>
+    <p>
+      Ich finde es ein riesiges Privileg, hier in der Schweiz aufgewachsen zu sein und eine direkte Demokratie zu
+      haben. Damit man vom Recht auf politische Partizipation aber Gebrauch machen kann, muss man sich informieren
+      können, und da kommen wir zum Problem: Viele Beschlüsse, das Budget und die Planung sind zwar öffentlich,
+      aber teilweise verstreut oder schwer zu finden.
+    </p>
+
+    <h2>Was diese Seite anders macht</h2>
+    <p>
+      Ausgehend vom Newsletter der Stadt Aarau kategorisiere ich jede Information mit Hilfe von KI und fasse sie
+      auf das Wesentliche zusammen. Die Referenz auf die Originalquelle bleibt dabei stets vorhanden, sodass man
+      sich jederzeit auch direkt auf die Originalquelle stürzen kann :-). Als langjähriger ITler mit aktueller
+      Weiterbildung im Bereich Data Science &amp; AI sehe ich es fast schon als meine Verpflichtung, diese
+      Informationen sauber und auffindbar aufzubereiten.
+    </p>
+    <p>
+      Obwohl ich durchaus meine politische Meinung habe, schlägt diese hier bewusst nicht durch. Es soll darum
+      gehen, möglichst vielen Menschen einen einfachen und übersichtlichen Zugang zu den relevanten städtischen
+      Informationen zu geben.
+    </p>
+
+    <h2>Kontakt und Unterstützung</h2>
+    <p>
+      Hast du einen Fehler entdeckt, eine Anmerkung oder eine Idee für die Seite? Schreib mir über das
+      <a href={siteConfig.contactPath}>Kontaktformular</a>, ich freue mich über jede Rückmeldung. Wie die
+      Artikel entstehen und was im Zweifel gilt, steht im <a href="/disclaimer/">Disclaimer</a>.
+    </p>
+    <p>
+      Die Seite ist ein Freizeitprojekt ohne Werbung.
+      Wenn sie dir nützt, erzähl doch 3 deiner Frunde davon, so hilfst du mir schon sehr!
+    </p>
+  </div>
+</BaseLayout>
