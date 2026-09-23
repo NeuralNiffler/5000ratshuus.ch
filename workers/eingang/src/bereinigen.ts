@@ -9,8 +9,12 @@
  * bereinigten Text im Workflow-Lauf ansehen und hier nachschärfen.
  */
 
-// Zeilen mit Link und einem dieser Wörter werden komplett entfernt.
-const PERSOENLICHE_ZEILE = /abmeld|abbestell|unsubscribe|opt-?out|profil|einstellungen|preferences|manage/i;
+// Zeilen mit Link und einem dieser Wörter werden komplett entfernt. Die
+// Stadt Aarau verlinkt "Newsletter-Abo ändern oder deaktivieren?" über
+// persönliche aarau.ch-Kurzlinks (Stand 2026-09 geprüft), die sonst als
+// Quell-Kurzlinks durchgelassen würden.
+const PERSOENLICHE_ZEILE =
+  /abmeld|abbestell|unsubscribe|opt-?out|profil|einstellungen|preferences|manage|newsletter-abo|abo ändern|deaktivier/i;
 
 // Lange, zufällig aussehende Query-Werte sind fast immer Empfänger-Tokens.
 const TOKEN_IN_URL = /[?&][^=&\s]+=[A-Za-z0-9_\-%.]{20,}/;
