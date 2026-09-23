@@ -10,6 +10,51 @@ const ANTHROPIC_VERSION = "2023-06-01";
 const STANDARD_MODEL = "claude-sonnet-5";
 const STANDARD_MAX_TOKENS = 8000;
 
+/**
+ * Listenpreise in USD pro Million Tokens (Anthropic, Stand 2026-06-24). Nur
+ * für die Kostenschätzung im Pipeline-Protokoll; verbindlich ist die
+ * Abrechnung in der Anthropic Console. Unbekanntes Modell → keine Schätzung.
+ */
+const PREISE_USD_PRO_MIO: Record<string, { input: number; output: number }> = {
+  "claude-sonnet-5": { input: 2, output: 10 },
+  "claude-haiku-4-5": { input: 1, output: 5 },
+  "claude-opus-5": { input: 5, output: 25 },
+};
+
+export interface Verbrauch {
+  aufrufe: number;
+  inputTokens: number;
+  outputTokens: number;
+  /** Geschätzte Kosten in USD, null wenn für ein verwendetes Modell kein Preis hinterlegt ist. */
+  geschaetztUsd: number | null;
+  modelle: string[];
+}
+
+// Summe über alle Aufrufe dieses Prozesses. Ein Pipeline-Lauf ist ein
+// Prozess, damit entspricht das genau dem Verbrauch pro Newsletter-Mail.
+const verbrauch: Verbrauch = { aufrufe: 0, inputTokens: 0, outputTokens: 0, geschaetztUsd: 0, modelle: [] };
+
+function erfasseVerbrauch(modell: string, inputTokens: number, outputTokens: number) {
+  verbrauch.aufrufe += 1;
+  verbrauch.inputTokens += inputTokens;
+  verbrauch.outputTokens += outputTokens;
+  if (!verbrauch.modelle.includes(modell)) verbrauch.modelle.push(modell);
+  const preis = PREISE_USD_PRO_MIO[modell];
+  verbrauch.geschaetztUsd =
+    preis && verbrauch.geschaetztUsd !== null
+      ? verbrauch.geschaetztUsd + (inputTokens * preis.input + outputTokens * preis.output) / 1_000_000
+      : null;
+}
+
+/** Bisheriger Verbrauch aller Claude-Aufrufe in diesem Lauf. */
+export function holeVerbrauch(): Verbrauch {
+  return {
+    ...verbrauch,
+    modelle: [...verbrauch.modelle],
+    geschaetztUsd: verbrauch.geschaetztUsd === null ? null : Math.round(verbrauch.geschaetztUsd * 10_000) / 10_000,
+  };
+}
+
 /** Modelle antworten trotz Anweisung gelegentlich in einem ```json-Codeblock. */
 function extrahiereJsonText(text: string): string {
   const codeblock = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
@@ -29,6 +74,8 @@ export async function rufeClaudeJsonAuf(prompt: string, opts?: { maxTokens?: num
     throw new Error("ANTHROPIC_API_KEY fehlt (Umgebungsvariable, als GitHub-Actions-Secret zu hinterlegen).");
   }
 
+  const modell = opts?.modell ?? process.env.ANTHROPIC_MODEL ?? STANDARD_MODEL;
+
   const response = await fetch(MESSAGES_URL, {
     method: "POST",
     headers: {
@@ -37,7 +84,7 @@ export async function rufeClaudeJsonAuf(prompt: string, opts?: { maxTokens?: num
       "anthropic-version": ANTHROPIC_VERSION,
     },
     body: JSON.stringify({
-      model: opts?.modell ?? process.env.ANTHROPIC_MODEL ?? STANDARD_MODEL,
+      model: modell,
       max_tokens: opts?.maxTokens ?? STANDARD_MAX_TOKENS,
       messages: [{ role: "user", content: prompt }],
     }),
@@ -48,7 +95,12 @@ export async function rufeClaudeJsonAuf(prompt: string, opts?: { maxTokens?: num
     throw new Error(`Claude-API-Fehler ${response.status}: ${body}`);
   }
 
-  const data = (await response.json()) as { content?: { type: string; text?: string }[] };
+  const data = (await response.json()) as {
+    content?: { type: string; text?: string }[];
+    usage?: { input_tokens?: number; output_tokens?: number };
+  };
+  // Vor allen weiteren Prüfungen erfassen: auch eine unbrauchbare Antwort kostet.
+  erfasseVerbrauch(modell, data.usage?.input_tokens ?? 0, data.usage?.output_tokens ?? 0);
   const textBlock = data.content?.find((b) => b.type === "text");
   if (!textBlock?.text) {
     throw new Error("Unerwartete Claude-API-Antwort: kein Text-Block im content-Array.");

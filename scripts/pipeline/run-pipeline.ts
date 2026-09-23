@@ -27,6 +27,7 @@ import { pruefeAusgabe } from "../../src/lib/checks.ts";
 import { kategorisiereAusgabe } from "./categorize.ts";
 import { loeseKurzlinkAuf, ladeSeiteAlsText } from "./resolve-sources.ts";
 import { generiereUndSchreibeArtikel } from "./generate-article.ts";
+import { holeVerbrauch, type Verbrauch } from "./claude-client.ts";
 
 interface PipelineProtokoll {
   zeitpunkt: string;
@@ -38,6 +39,8 @@ interface PipelineProtokoll {
   quelleAufgeloest?: string;
   pruefungenBestanden?: boolean;
   fehler?: string;
+  /** Claude-API-Verbrauch dieses Laufs, wird in schreibeProtokoll() gesetzt. */
+  verbrauch?: Verbrauch;
 }
 
 function leseArg(name: string): string | undefined {
@@ -49,7 +52,8 @@ function schreibeProtokoll(protokoll: PipelineProtokoll) {
   const dir = join(process.cwd(), ".build/pipeline-log");
   mkdirSync(dir, { recursive: true });
   const pfad = join(dir, `${Date.now()}.json`);
-  writeFileSync(pfad, JSON.stringify(protokoll, null, 2) + "\n");
+  const mitVerbrauch = { ...protokoll, verbrauch: holeVerbrauch() };
+  writeFileSync(pfad, JSON.stringify(mitVerbrauch, null, 2) + "\n");
   console.log(`Protokoll geschrieben: ${pfad}`);
 }
 
