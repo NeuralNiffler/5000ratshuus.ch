@@ -6,18 +6,20 @@ import { siteConfig } from "../site.config";
 <BaseLayout title="Impressum" description={`Impressum von ${siteConfig.name}.`}>
   <h1>Impressum</h1>
   <div class="page-content">
-    <p>{siteConfig.privateNotice}</p>
     <p>
-      Betreiber und verantwortlich für den Inhalt:<br />
+      Betreiber:<br />
       Robin Schmid<br />
       Aarau, Schweiz
     </p>
     <p>
-      Kontakt: über das <a href="/kontakt/">Kontaktformular</a>
+      Kontakt: über das <a href={siteConfig.contactPath}>Kontaktformular</a>
     </p>
     <p>
-      Diese Seite verlinkt auf amtliche Quellen der Stadt Aarau, steht aber in keiner Verbindung zu ihr und ist
-      kein amtliches Angebot der Stadt Aarau.
+      {siteConfig.privateNotice}
+    </p>
+    <p>
+      Die Artikel entstehen KI-gestützt und automatisiert, im Zweifel gilt die jeweils verlinkte amtliche
+      Publikation. Mehr dazu im <a href="/disclaimer/">Disclaimer</a>.
     </p>
   </div>
 </BaseLayout>

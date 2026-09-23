@@ -23,6 +23,7 @@ const {
 
 const canonicalUrl = new URL(Astro.url.pathname, siteConfig.baseUrl).toString();
 const fullTitle = title === siteConfig.name ? title : `${title} · ${siteConfig.name}`;
+const [disclaimerVor, disclaimerNach] = siteConfig.disclaimer.split("Kontaktformular");
 ---
 
 <!doctype html>
@@ -62,14 +63,11 @@ const fullTitle = title === siteConfig.name ? title : `${title} · ${siteConfig.
     </div>
     <div class="wrap">
       <footer class="site-footer">
-        <p>{siteConfig.privateNotice}</p>
         <p class="note">
-          {siteConfig.disclaimer} Zum <a href={siteConfig.contactPath}>Kontaktformular</a>.
+          {disclaimerVor}<a href={siteConfig.contactPath}>Kontaktformular</a>{disclaimerNach}
         </p>
-        <p>
           <a href="/impressum/">Impressum</a> · <a href="/datenschutz/">Datenschutz</a> ·
           <a href="/disclaimer/">Disclaimer</a> · <a href="/rss.xml">RSS-Feed</a>
-        </p>
       </footer>
     </div>
   </body>

@@ -20,5 +20,5 @@ export const siteConfig = {
     "Diese Seite wird KI-gestützt betrieben. Fehler können vorkommen, bei Auffälligkeiten bitte über das Kontaktformular melden.",
   /** Hinweis auf die private, nicht-amtliche Urheberschaft (Abschnitt 13). */
   privateNotice:
-    "Diese Seite ist ein privates Projekt und steht in keiner Verbindung zur Stadt Aarau. Sie ist kein amtliches Angebot der Stadt.",
+      "Diese Seite ist ein privates Projekt. Sie wird nicht von der Stadt Aarau betrieben, beauftragt oder unterstützt und ist kein amtliches Angebot. Die Website gibt lediglich amtliche Informationen wieder und verlinkt auf die Originalquellen der Stadt.",
 } as const;
