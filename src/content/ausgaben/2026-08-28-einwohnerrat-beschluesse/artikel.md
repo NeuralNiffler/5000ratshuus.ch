@@ -4,7 +4,9 @@ template: "A"
 headline: "Einwohnerrat Aarau: neun Beschlüsse aus der Sitzung vom 24. August 2026"
 kategorie: "Amtliche Publikation"
 datePublished: "2026-08-28"
-korrekturen: []
+korrekturen:
+  - datum: "2026-09-23"
+    beschreibung: "Links auf die Botschaften und den Änderungsentwurf korrigiert (führten zu einer Fehlerseite)."
 description: "Der Einwohnerrat Aarau hat am 24. August 2026 neun Beschlüsse gefasst, zwei davon referendumspflichtig. Einordnung mit direktem Link zu jeder Originalquelle."
 ogDescription: "Zwei referendumspflichtige und sieben abschliessende Beschlüsse aus der Sitzung vom 24. August 2026, mit Link zur Originalquelle pro Geschäft."
 keywords:
