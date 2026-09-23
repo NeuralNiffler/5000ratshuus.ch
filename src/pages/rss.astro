@@ -1,0 +1,24 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { siteConfig } from "../site.config";
+
+// Browser zeigen /rss.xml nur als rohes XML an. Diese Seite erklärt, wie man
+// den Feed abonniert. Ein XSL-Stylesheet wurde verworfen, weil Chrome XSLT ab
+// Version 158 (November 2026) entfernt.
+const feedUrl = new URL("/rss.xml", siteConfig.baseUrl).toString();
+---
+
+<BaseLayout title="RSS-Feed" description={`Neue Artikel von ${siteConfig.name} per RSS abonnieren.`}>
+  <h1>RSS-Feed</h1>
+  <div class="page-content">
+    <p>
+      Mit dem RSS-Feed erfährst du von jedem neuen Artikel, ohne die Seite regelmässig besuchen zu müssen.
+      Dafür brauchst du einen Feed-Reader, zum Beispiel eine App wie NetNewsWire, Feedly oder Inoreader.
+    </p>
+    <p>Kopiere diese Adresse und füge sie in deinem Feed-Reader als neues Abonnement ein:</p>
+    <p><code>{feedUrl}</code></p>
+    <p>
+      Viele Feed-Reader finden den Feed auch, wenn du einfach <code>{siteConfig.baseUrl}</code> eingibst.
+    </p>
+  </div>
+</BaseLayout>
