@@ -1,0 +1,26 @@
+[
+  {
+    "id": "2026-projektauflage-schachenallee",
+    "titel": "Sanierung Schachenallee",
+    "art": "sonstiges",
+    "urheber": null,
+    "ereignis": null,
+    "referendumspflichtig": false,
+    "tags": [
+      "Schachenallee",
+      "Sanierung",
+      "Strassenbau"
+    ],
+    "sitzungsdatum": null,
+    "publikationsdatum": "2026-09-18",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/short/vlv3QONa",
+        "label": "Projektauflage Sanierung Schachenallee",
+        "typ": "amtliche_publikation"
+      }
+    ],
+    "gruppe": "sonstige",
+    "kurztext": "Die Stadt Aarau veröffentlicht die Projektauflage für die Sanierung der Schachenallee."
+  }
+]
