@@ -1,41 +1,16 @@
 ---
-import type { Ausgabe } from "../lib/schema";
-import { getCitations } from "../lib/content";
-import { siteConfig } from "../site.config";
+/**
+ * Rendert ein JSON-LD-Objekt. Die Objekte selbst entstehen in
+ * src/lib/jsonld.ts, damit Prüfung 7 (src/lib/checks.ts) dieselben prüft.
+ */
+import type { JsonLdObjekt } from "../lib/jsonld";
 
 interface Props {
-  ausgabe: Ausgabe;
-  url: string;
+  daten: JsonLdObjekt;
 }
 
-const { ausgabe, url } = Astro.props;
-const { frontmatter, dateModified } = ausgabe;
-
-/**
- * Kein `author: Person` (siehe Plan, Entscheid "Autor"): Kein Geschäft hat
- * hier eine namentliche Urheberschaft im Sinn eines Artikelautors, Autorin
- * ist niemand und die Stadt Aarau ist nur Quelle, nicht Herausgeberin
- * dieser Seite (Abschnitt 13, Anschein von Amtlichkeit).
- */
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "NewsArticle",
-  headline: frontmatter.headline,
-  datePublished: frontmatter.datePublished,
-  dateModified,
-  inLanguage: siteConfig.lang,
-  publisher: {
-    "@type": "Organization",
-    name: siteConfig.name,
-    url: siteConfig.baseUrl,
-  },
-  mainEntityOfPage: url,
-  ...(frontmatter.about.length > 0
-    ? { about: frontmatter.about.map((name) => ({ "@type": "Thing", name })) }
-    : {}),
-  isBasedOn: frontmatter.quelleAmtlich,
-  citation: getCitations(ausgabe),
-};
+// "<" escapen, damit ein "</script>" in einem Titel das Script nicht beendet.
+const json = JSON.stringify(Astro.props.daten).replace(/</g, "\\u003c");
 ---
 
-<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />
+<script type="application/ld+json" set:html={json} is:inline />

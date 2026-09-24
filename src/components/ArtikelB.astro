@@ -17,6 +17,7 @@ const { ausgabe } = Astro.props;
 const { frontmatter, geschaefte, bodyHtml } = ausgabe;
 ---
 
+<article class="artikel">
 <p class="eyebrow">
   Aufhänger: Newsletter der Stadt Aarau, {frontmatter.newsletter.datum} · {frontmatter.kategorie}
 </p>
@@ -86,3 +87,4 @@ const { frontmatter, geschaefte, bodyHtml } = ausgabe;
     (kommunikation@aarau.ch) vom {frontmatter.newsletter.datum}.
   </p>
 </footer>
+</article>

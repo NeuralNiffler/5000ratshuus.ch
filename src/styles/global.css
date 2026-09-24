@@ -450,3 +450,28 @@ header.site-header nav a:hover {
 [hidden] {
   display: none !important;
 }
+
+/* Brotkrumen: sichtbar und als BreadcrumbList im JSON-LD (BaseLayout.astro). */
+nav.brotkrumen ol {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--sub);
+}
+
+nav.brotkrumen li + li::before {
+  content: "›";
+  margin-right: 0.35rem;
+}
+
+nav.brotkrumen li[aria-current="page"] {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}

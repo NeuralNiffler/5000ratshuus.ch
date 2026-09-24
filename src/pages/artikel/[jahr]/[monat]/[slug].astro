@@ -2,9 +2,8 @@
 import BaseLayout from "../../../../layouts/BaseLayout.astro";
 import ArtikelA from "../../../../components/ArtikelA.astro";
 import ArtikelB from "../../../../components/ArtikelB.astro";
-import JsonLd from "../../../../components/JsonLd.astro";
-import { getAllAusgaben, getArtikelPfad, getArtikelUrl } from "../../../../lib/content";
-import { siteConfig } from "../../../../site.config";
+import { getAllAusgaben, getArtikelPfad, getOgBildUrl } from "../../../../lib/content";
+import { artikelBrotkrumen, artikelJsonLd } from "../../../../lib/jsonld";
 
 export function getStaticPaths() {
   return getAllAusgaben().map((ausgabe) => {
@@ -15,7 +14,6 @@ export function getStaticPaths() {
 
 const { ausgabe } = Astro.props;
 const { frontmatter } = ausgabe;
-const url = new URL(getArtikelUrl(ausgabe), siteConfig.baseUrl).toString();
 ---
 
 <BaseLayout
@@ -25,9 +23,11 @@ const url = new URL(getArtikelUrl(ausgabe), siteConfig.baseUrl).toString();
   ogDescription={frontmatter.ogDescription}
   ogType="article"
   publishedTime={frontmatter.datePublished}
+  modifiedTime={ausgabe.dateModified}
+  section={frontmatter.kategorie}
+  image={getOgBildUrl(ausgabe)}
+  breadcrumbs={artikelBrotkrumen(ausgabe)}
+  jsonLd={[artikelJsonLd(ausgabe)]}
 >
-  <Fragment slot="head">
-    <JsonLd ausgabe={ausgabe} url={url} />
-  </Fragment>
   {frontmatter.template === "A" ? <ArtikelA ausgabe={ausgabe} /> : <ArtikelB ausgabe={ausgabe} />}
 </BaseLayout>

@@ -36,6 +36,7 @@ const gruppen: { key: GeschaeftGruppe; geschaefte: Geschaeft[] }[] = GRUPPEN_REI
 ).filter((gruppe) => gruppe.geschaefte.length > 0);
 ---
 
+<article class="artikel">
 <p class="eyebrow">
   Aufhänger: Newsletter der Stadt Aarau, {frontmatter.newsletter.datum} · {frontmatter.kategorie}
 </p>
@@ -81,7 +82,6 @@ const gruppen: { key: GeschaeftGruppe; geschaefte: Geschaeft[] }[] = GRUPPEN_REI
   )
 }
 
-<main>
   {
     referendumsGeschaefte.length > 0 && (
       <section class="group" id="referendum">
@@ -179,7 +179,6 @@ const gruppen: { key: GeschaeftGruppe; geschaefte: Geschaeft[] }[] = GRUPPEN_REI
       </section>
     )
   }
-</main>
 
 <footer class="artikel-footer">
   <p>Alle Botschaften und Reglementstexte einzeln oben pro Geschäft verlinkt.</p>
@@ -188,3 +187,4 @@ const gruppen: { key: GeschaeftGruppe; geschaefte: Geschaeft[] }[] = GRUPPEN_REI
     (kommunikation@aarau.ch) vom {frontmatter.newsletter.datum}.
   </p>
 </footer>
+</article>

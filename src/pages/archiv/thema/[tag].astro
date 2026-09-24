@@ -2,8 +2,8 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import GeschaeftListItem from "../../../components/GeschaeftListItem.astro";
 import { getDistinctTags, getGeschaefteByTag } from "../../../lib/index-db";
-import { slugify } from "../../../lib/format";
-import { siteConfig } from "../../../site.config";
+import { archivBeschreibung, slugify } from "../../../lib/format";
+import { sammlungJsonLd } from "../../../lib/jsonld";
 
 export function getStaticPaths() {
   return getDistinctTags().map((tag) => ({
@@ -14,14 +14,22 @@ export function getStaticPaths() {
 
 const { tag } = Astro.props;
 const eintraege = getGeschaefteByTag(tag);
+const pfad = `/archiv/thema/${slugify(tag)}/`;
+const titel = `${tag}: Geschäfte der Stadt Aarau`;
+const beschreibung = archivBeschreibung(eintraege, `zum Thema ${tag}`);
 ---
 
 <BaseLayout
-  title={`Thema: ${tag}`}
-  description={`Alle Geschäfte zum Thema ${tag} auf ${siteConfig.name}, mit Link zur Quelle.`}
+  title={titel}
+  description={beschreibung}
+  breadcrumbs={[
+    { name: "Startseite", pfad: "/" },
+    { name: "Archiv", pfad: "/archiv/" },
+    { name: tag, pfad },
+  ]}
+  jsonLd={[sammlungJsonLd(titel, beschreibung, pfad)]}
 >
   <h1>Thema: {tag}</h1>
-  <p class="page-content"><a href="/archiv/">← Zurück zum Archiv</a></p>
 
   <ul class="artikel-liste">
     {eintraege.map((eintrag) => <GeschaeftListItem eintrag={eintrag} />)}

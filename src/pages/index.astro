@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import GeschaeftListItem from "../components/GeschaeftListItem.astro";
 import { getAlleGeschaefte, getDistinctTags, getDistinctArten, GESCHAEFT_ART_LABEL } from "../lib/index-db";
 import { slugify } from "../lib/format";
+import { websiteJsonLd } from "../lib/jsonld";
 import { siteConfig } from "../site.config";
 
 const eintraege = getAlleGeschaefte();
@@ -10,7 +11,11 @@ const tags = getDistinctTags();
 const arten = getDistinctArten();
 ---
 
-<BaseLayout title={siteConfig.name} description={siteConfig.description}>
+<BaseLayout
+  title="Aarauer Kommunalpolitik: Einwohnerrat, Budget, Beschlüsse"
+  description={siteConfig.description}
+  jsonLd={[websiteJsonLd()]}
+>
   <h1>Aarauer Kommunalpolitik, übersichtlich kategorisiert</h1>
   <p class="page-content">
     Jeder Eintrag mit Link zur amtlichen Originalquelle..

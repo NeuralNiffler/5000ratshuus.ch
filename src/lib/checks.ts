@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Ausgabe } from "./schema";
 import { getCitations } from "./content";
+import { artikelJsonLd } from "./jsonld";
 import { istUnvollstaendigeDokumentUrl, pruefeUrlsErreichbar } from "./url-check";
 
 /**
@@ -193,25 +194,31 @@ export function pruefeDisclaimerUndKontakt(): PruefErgebnis {
 }
 
 /**
- * Rekonstruiert dieselbe Objektform wie src/components/JsonLd.astro und
- * prüft die Pflichtfelder. Bewusst kein echter `astro build`: Die
- * Datenebene ist über Zod bereits streng validiert (schema.ts), und
- * JsonLd.astro ist eine einfache, verzweigungsarme Objektkonstruktion —
- * ein Rendering-Bug dort würde astro build ohnehin hart brechen lassen.
+ * Prüft genau das Objekt, das die Artikelseite rendert (artikelJsonLd aus
+ * src/lib/jsonld.ts), plus die Meta-Angaben aus dem Frontmatter. Bewusst
+ * kein echter `astro build`: Die Datenebene ist über Zod bereits streng
+ * validiert (schema.ts), ein Rendering-Fehler würde astro build ohnehin hart
+ * brechen lassen.
  */
 function pruefeJsonLdUndMeta(ausgabe: Ausgabe): PruefErgebnis {
-  const { frontmatter, dateModified } = ausgabe;
+  const { frontmatter } = ausgabe;
+  const jsonLd = artikelJsonLd(ausgabe);
   const fehlt: string[] = [];
 
-  if (!frontmatter.headline.trim()) fehlt.push("headline fehlt");
-  if (!isGueltigesDatum(frontmatter.datePublished)) fehlt.push("datePublished ist kein gültiges Datum");
-  if (!isGueltigesDatum(dateModified)) fehlt.push("dateModified ist kein gültiges Datum");
-  if (!frontmatter.quelleAmtlich.trim()) fehlt.push("quelleAmtlich (isBasedOn) fehlt");
-  if (!frontmatter.description.trim()) fehlt.push("description (Meta-Description) fehlt");
+  try {
+    JSON.parse(JSON.stringify(jsonLd));
+  } catch (e) {
+    fehlt.push(`JSON-LD ist nicht serialisierbar: ${(e as Error).message}`);
+  }
+  if (!String(jsonLd.headline ?? "").trim()) fehlt.push("headline fehlt");
+  if (!String(jsonLd.description ?? "").trim()) fehlt.push("description (Meta-Description) fehlt");
+  if (!isGueltigesDatum(String(jsonLd.datePublished))) fehlt.push("datePublished ist kein gültiges Datum");
+  if (!isGueltigesDatum(String(jsonLd.dateModified))) fehlt.push("dateModified ist kein gültiges Datum");
+  if (!jsonLd.image) fehlt.push("image (Vorschaubild) fehlt");
+  if (!String(jsonLd.isBasedOn ?? "").trim()) fehlt.push("quelleAmtlich (isBasedOn) fehlt");
   if (frontmatter.keywords.length === 0) fehlt.push("keywords ist leer");
-
-  const citations = getCitations(ausgabe);
-  if (citations.length === 0) fehlt.push("citation ist leer (keine Quell-URLs über alle Geschäfte)");
+  if (!Array.isArray(jsonLd.citation) || jsonLd.citation.length === 0)
+    fehlt.push("citation ist leer (keine Quell-URLs über alle Geschäfte)");
 
   return {
     nr: 7,

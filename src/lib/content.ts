@@ -205,6 +205,12 @@ export function getArtikelUrl(ausgabe: Ausgabe): string {
   return `/artikel/${jahr}/${monat}/${slug}/`;
 }
 
+/** Vorschaubild (og:image) der Ausgabe, erzeugt von src/pages/og/[...pfad].png.ts. */
+export function getOgBildUrl(ausgabe: Ausgabe): string {
+  const { jahr, monat, slug } = getArtikelPfad(ausgabe);
+  return `/og/${jahr}/${monat}/${slug}.png`;
+}
+
 /** Für Archiv-Einträge aus dem SQLite-Index, die nur den Ausgabe-Ordner kennen. */
 export function getArtikelUrlByOrdner(ordner: string): string {
   const ausgabe = getAllAusgaben().find((a) => a.ordner === ordner);

@@ -2,7 +2,8 @@
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import GeschaeftListItem from "../../../components/GeschaeftListItem.astro";
 import { getDistinctArten, getGeschaefteByArt, GESCHAEFT_ART_LABEL } from "../../../lib/index-db";
-import { siteConfig } from "../../../site.config";
+import { archivBeschreibung } from "../../../lib/format";
+import { sammlungJsonLd } from "../../../lib/jsonld";
 import type { GeschaeftArt } from "../../../lib/schema";
 
 export function getStaticPaths() {
@@ -15,14 +16,22 @@ export function getStaticPaths() {
 const { art } = Astro.props as { art: GeschaeftArt };
 const label = GESCHAEFT_ART_LABEL[art];
 const eintraege = getGeschaefteByArt(art);
+const pfad = `/archiv/art/${art}/`;
+const titel = `${label}: Geschäfte der Stadt Aarau`;
+const beschreibung = archivBeschreibung(eintraege, `der Art ${label}`);
 ---
 
 <BaseLayout
-  title={`Art: ${label}`}
-  description={`Alle Geschäfte der Art ${label} auf ${siteConfig.name}, mit Link zur Quelle.`}
+  title={titel}
+  description={beschreibung}
+  breadcrumbs={[
+    { name: "Startseite", pfad: "/" },
+    { name: "Archiv", pfad: "/archiv/" },
+    { name: label, pfad },
+  ]}
+  jsonLd={[sammlungJsonLd(titel, beschreibung, pfad)]}
 >
   <h1>Art des Geschäfts: {label}</h1>
-  <p class="page-content"><a href="/archiv/">← Zurück zum Archiv</a></p>
 
   <ul class="artikel-liste">
     {eintraege.map((eintrag) => <GeschaeftListItem eintrag={eintrag} />)}

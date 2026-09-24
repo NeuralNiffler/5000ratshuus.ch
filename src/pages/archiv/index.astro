@@ -9,17 +9,25 @@ import {
   GESCHAEFT_ART_LABEL,
 } from "../../lib/index-db";
 import { slugify } from "../../lib/format";
-import { siteConfig } from "../../site.config";
+import { sammlungJsonLd } from "../../lib/jsonld";
+import { archivBeschreibung } from "../../lib/format";
 
 const eintraege = getAlleGeschaefte();
 const tags = getDistinctTags();
 const arten = getDistinctArten();
 const jahre = getDistinctJahre();
+const titel = "Archiv der Aarauer Kommunalpolitik";
+const beschreibung = archivBeschreibung(eintraege, "chronologisch, nach Thema, Art des Geschäfts und Datum");
 ---
 
 <BaseLayout
-  title="Archiv"
-  description={`Alle Geschäfte von ${siteConfig.name}, chronologisch, sowie nach Thema und Art des Geschäfts.`}
+  title={titel}
+  description={beschreibung}
+  breadcrumbs={[
+    { name: "Startseite", pfad: "/" },
+    { name: "Archiv", pfad: "/archiv/" },
+  ]}
+  jsonLd={[sammlungJsonLd(titel, beschreibung, "/archiv/")]}
 >
   <h1>Archiv</h1>
 

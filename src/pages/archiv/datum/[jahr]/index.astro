@@ -6,8 +6,8 @@ import {
   getDistinctMonateFuerJahr,
   getGeschaefteByJahr,
 } from "../../../../lib/index-db";
-import { formatMonatJahr } from "../../../../lib/format";
-import { siteConfig } from "../../../../site.config";
+import { archivBeschreibung, formatMonatJahr } from "../../../../lib/format";
+import { sammlungJsonLd } from "../../../../lib/jsonld";
 
 export function getStaticPaths() {
   return getDistinctJahre().map((jahr) => ({
@@ -19,14 +19,22 @@ export function getStaticPaths() {
 const { jahr } = Astro.props as { jahr: string };
 const monate = getDistinctMonateFuerJahr(jahr);
 const eintraege = getGeschaefteByJahr(jahr);
+const pfad = `/archiv/datum/${jahr}/`;
+const titel = `Aarauer Kommunalpolitik ${jahr}`;
+const beschreibung = archivBeschreibung(eintraege, `aus dem Jahr ${jahr}`);
 ---
 
 <BaseLayout
-  title={`Archiv ${jahr}`}
-  description={`Alle Geschäfte aus dem Jahr ${jahr} auf ${siteConfig.name}, mit Link zur Quelle.`}
+  title={titel}
+  description={beschreibung}
+  breadcrumbs={[
+    { name: "Startseite", pfad: "/" },
+    { name: "Archiv", pfad: "/archiv/" },
+    { name: jahr, pfad },
+  ]}
+  jsonLd={[sammlungJsonLd(titel, beschreibung, pfad)]}
 >
   <h1>Archiv {jahr}</h1>
-  <p class="page-content"><a href="/archiv/">← Zurück zum Archiv</a></p>
 
   <p class="eyebrow">Monate</p>
   <nav class="archiv-nav" aria-label="Nach Monat">

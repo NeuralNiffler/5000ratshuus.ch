@@ -75,6 +75,17 @@ verworfene Alternativen; hier nur die Umsetzung:
   `author: Person`. Siehe
   [`docs/entscheide/2026-09-16-kein-personenautor.md`](docs/entscheide/2026-09-16-kein-personenautor.md).
 
+- **SEO**: Meta-Angaben, Open Graph und Brotkrumen im
+  [`BaseLayout.astro`](src/layouts/BaseLayout.astro) (Props `image`,
+  `breadcrumbs`, `jsonLd`, `noindex`). Alle JSON-LD-Objekte entstehen in
+  [`src/lib/jsonld.ts`](src/lib/jsonld.ts), Prüfung 7 prüft dieselben.
+  Vorschaubilder (1200×630) generiert
+  [`src/pages/og/[...pfad].png.ts`](src/pages/og/[...pfad].png.ts) beim Build
+  mit satori + resvg, ohne Wappen oder Stadtlogo (Abschnitt 13). `lastmod` der
+  Sitemap kommt aus [`src/lib/sitemap.ts`](src/lib/sitemap.ts).
+- **KI-Crawler gesperrt**, nur klassische Suche: `public/robots.txt`, siehe
+  [`docs/entscheide/2026-09-24-ki-crawler-gesperrt.md`](docs/entscheide/2026-09-24-ki-crawler-gesperrt.md).
+
 ## Redaktionelle Regeln (verbindlich, Entwicklungsdokument Abschnitt 6)
 
 - **Referendumsfrist nie als Datum.** Auch wenn die Quelle sie nennt: nur der

@@ -70,3 +70,15 @@ export function statusZusaetze(e: {
     e.budgetiert ? "Budgetiert, nicht effektiv" : null,
   ].filter((z): z is string => Boolean(z));
 }
+
+/**
+ * Meta-Description für Archivseiten: Anzahl und jüngstes Datum statt eines
+ * Standardtexts, damit jede Seite im Suchergebnis unterscheidbar ist.
+ * `was` ergänzt "Geschäfte der Stadt Aarau …", z. B. "zum Thema Finanzen".
+ */
+export function archivBeschreibung(eintraege: { publikationsdatum: string }[], was: string): string {
+  const anzahl = eintraege.length === 1 ? "Ein Geschäft" : `${eintraege.length} Geschäfte`;
+  const juengstes = eintraege.map((e) => e.publikationsdatum).sort().at(-1);
+  const stand = juengstes ? `, zuletzt vom ${formatDatumLesbar(juengstes)}` : "";
+  return `${anzahl} der Stadt Aarau ${was}${stand}. Jeweils mit Link zur amtlichen Originalquelle.`;
+}

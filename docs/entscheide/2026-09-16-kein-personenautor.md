@@ -8,7 +8,7 @@
 Artikel führen **keinen** `meta name="author"` und **kein**
 `author: { "@type": "Person" }` im JSON-LD. Stattdessen steht im JSON-LD ein
 `publisher` als `Organization` mit dem Seitennamen
-([`src/components/JsonLd.astro`](../../src/components/JsonLd.astro)).
+([`src/lib/jsonld.ts`](../../src/lib/jsonld.ts)).
 
 Die Templates A und B in `docs/aarau-newsletter-artikel/SKILL.md` setzen
 `meta name="author" content="Robin Schmid"` und
