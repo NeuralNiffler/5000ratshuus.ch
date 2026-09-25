@@ -416,6 +416,22 @@ header.site-header nav a:hover {
   margin: 0;
 }
 
+/* Filter (Thema, Art, Datum) auf Startseite und Archiv als eigener Kasten,
+   damit sie sich sichtbar von der Artikelliste darunter abheben. */
+.filter-box {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 0.6rem;
+  padding: 1rem 1.25rem;
+  margin: 1.5rem 0 2rem;
+}
+.filter-box > .eyebrow:first-child {
+  margin-top: 0;
+}
+.filter-box > .archiv-nav:last-child {
+  margin-bottom: 0;
+}
+
 .archiv-nav {
   font-family: var(--font-sans);
   font-size: 0.85rem;

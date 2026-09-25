@@ -36,12 +36,14 @@ const beschreibung = archivBeschreibung(eintraege, `aus dem Jahr ${jahr}`);
 >
   <h1>Archiv {jahr}</h1>
 
-  <p class="eyebrow">Monate</p>
-  <nav class="archiv-nav" aria-label="Nach Monat">
-    {monate.map((monat) => (
-      <a href={`/archiv/datum/${jahr}/${monat}/`}>{formatMonatJahr(monat, jahr)}</a>
-    ))}
-  </nav>
+  <div class="filter-box">
+    <p class="eyebrow">Monate</p>
+    <nav class="archiv-nav" aria-label="Nach Monat">
+      {monate.map((monat) => (
+        <a href={`/archiv/datum/${jahr}/${monat}/`}>{formatMonatJahr(monat, jahr)}</a>
+      ))}
+    </nav>
+  </div>
 
   <ul class="artikel-liste">
     {eintraege.map((eintrag) => <GeschaeftListItem eintrag={eintrag} />)}

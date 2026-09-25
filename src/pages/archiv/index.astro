@@ -35,24 +35,26 @@ const beschreibung = archivBeschreibung(eintraege, "chronologisch, nach Thema, A
     Alle bisherigen Geschäfte, chronologisch. Zusätzlich nach Thema oder Art des Geschäfts gefiltert:
   </p>
 
-  <p class="eyebrow">Thema</p>
-  <nav class="archiv-nav" aria-label="Nach Thema">
-    {tags.map((tag) => (
-      <a href={`/archiv/thema/${slugify(tag)}/`}>{tag}</a>
-    ))}
-  </nav>
-  <p class="eyebrow">Art des Geschäfts</p>
-  <nav class="archiv-nav" aria-label="Nach Art des Geschäfts">
-    {arten.map((art) => (
-      <a href={`/archiv/art/${art}/`}>{GESCHAEFT_ART_LABEL[art]}</a>
-    ))}
-  </nav>
-  <p class="eyebrow">Datum</p>
-  <nav class="archiv-nav" aria-label="Nach Datum">
-    {jahre.map((jahr) => (
-      <a href={`/archiv/datum/${jahr}/`}>{jahr}</a>
-    ))}
-  </nav>
+  <div class="filter-box">
+    <p class="eyebrow">Thema</p>
+    <nav class="archiv-nav" aria-label="Nach Thema">
+      {tags.map((tag) => (
+        <a href={`/archiv/thema/${slugify(tag)}/`}>{tag}</a>
+      ))}
+    </nav>
+    <p class="eyebrow">Art des Geschäfts</p>
+    <nav class="archiv-nav" aria-label="Nach Art des Geschäfts">
+      {arten.map((art) => (
+        <a href={`/archiv/art/${art}/`}>{GESCHAEFT_ART_LABEL[art]}</a>
+      ))}
+    </nav>
+    <p class="eyebrow">Datum</p>
+    <nav class="archiv-nav" aria-label="Nach Datum">
+      {jahre.map((jahr) => (
+        <a href={`/archiv/datum/${jahr}/`}>{jahr}</a>
+      ))}
+    </nav>
+  </div>
 
   <ul class="artikel-liste">
     {eintraege.map((eintrag) => <GeschaeftListItem eintrag={eintrag} />)}
