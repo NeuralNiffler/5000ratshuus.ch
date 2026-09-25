@@ -81,7 +81,7 @@ export function buildIndex(): void {
         a.frontmatter.slug,
         a.ordner,
         a.frontmatter.headline,
-        a.frontmatter.template,
+        a.template,
         a.frontmatter.datePublished,
       );
     }

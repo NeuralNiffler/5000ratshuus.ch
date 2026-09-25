@@ -62,6 +62,10 @@ verworfene Alternativen; hier nur die Umsetzung:
   Einlesen und Validieren läuft über [`src/lib/content.ts`](src/lib/content.ts) —
   reines Node/TypeScript ohne Astro-Abhängigkeit, damit dieselbe Logik später
   von der Pipeline (Phase 1c) wiederverwendet werden kann.
+- **Template A/B** wird nicht gewählt, sondern aus der Anzahl Geschäfte
+  berechnet (`templateFuer()` in `schema.ts`): eines → B (Einzelthema),
+  mehrere → A (Beschlussliste). Siehe
+  [`docs/entscheide/2026-09-25-template-aus-anzahl-geschaefte.md`](docs/entscheide/2026-09-25-template-aus-anzahl-geschaefte.md).
 - **SQLite-Index**: [`src/lib/index-db.ts`](src/lib/index-db.ts) baut bei
   jedem Build (und bei jeder Dev-Anfrage) eine SQLite-Datei unter `.build/`
   aus den `geschaefte.json`-Dateien. Daraus entstehen die Archivseiten nach

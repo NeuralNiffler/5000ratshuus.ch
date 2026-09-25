@@ -110,8 +110,12 @@ export async function generiereUndSchreibeArtikel(
 
   const newsletterRoh = istObjekt(frontmatterRoh.newsletter) ? frontmatterRoh.newsletter : {};
 
+  // Das Template wird aus der Anzahl Geschäfte berechnet (templateFuer in
+  // schema.ts), eine Wahl des Modells wird verworfen.
+  const { template: _template, ...frontmatterOhneTemplate } = frontmatterRoh;
+
   const vollstaendigesFrontmatter = {
-    ...frontmatterRoh,
+    ...frontmatterOhneTemplate,
     slug,
     datePublished: kontext.datePublished,
     korrekturen: [],

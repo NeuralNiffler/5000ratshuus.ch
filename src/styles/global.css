@@ -134,7 +134,8 @@ section.group > h2 {
   font-size: 1.25rem;
   margin-bottom: 0.25rem;
 }
-section.group > .group-intro {
+section.group > .group-intro,
+article.geschaeft > .referendum-hinweis {
   color: var(--sub);
   font-size: 0.95rem;
   margin-top: 0;

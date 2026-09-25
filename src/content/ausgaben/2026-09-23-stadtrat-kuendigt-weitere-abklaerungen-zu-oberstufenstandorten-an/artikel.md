@@ -1,6 +1,5 @@
 ---
 slug: stadtrat-kuendigt-weitere-abklaerungen-zu-oberstufenstandorten-an
-template: B
 headline: Stadtrat kündigt weitere Abklärungen zu Oberstufenstandorten an
 kategorie: Medienmitteilung
 datePublished: '2026-09-23'

@@ -1,8 +1,10 @@
 ---
 /**
- * Template B: Einzelthema (z. B. eine Medienmitteilung wie eine
- * Budget-Ankündigung). Kein Inhaltsverzeichnis, keine Tabellen, optional
- * eine Kennzahlen-Box. Siehe docs/aarau-newsletter-artikel/SKILL.md.
+ * Template B: Einzelthema, d. h. genau ein Geschäft (z. B. eine
+ * Medienmitteilung wie eine Budget-Ankündigung). Kein Inhaltsverzeichnis,
+ * keine Tabellen, optional eine Kennzahlen-Box. Siehe
+ * docs/aarau-newsletter-artikel/SKILL.md und
+ * docs/entscheide/2026-09-25-template-aus-anzahl-geschaefte.md.
  */
 import type { Ausgabe } from "../lib/schema";
 import { formatDatumLesbar } from "../lib/format";
@@ -52,6 +54,14 @@ const { frontmatter, geschaefte, bodyHtml } = ausgabe;
           </>
         ))}
       </p>
+
+      {g.referendumspflichtig && (
+        <p class="referendum-hinweis">
+          Referendumspflichtig: Wer mit diesem Beschluss nicht einverstanden ist, kann per Referendum eine
+          Volksabstimmung erzwingen. Das genaue Datum der Unterschriftenfrist steht in der Originalquelle, oben
+          verlinkt. Ohne genug Unterschriften tritt der Beschluss danach automatisch in Kraft.
+        </p>
+      )}
 
       {frontmatter.forecast && <span class="badge forecast">Budgetiert, nicht effektiv</span>}
 

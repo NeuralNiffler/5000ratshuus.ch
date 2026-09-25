@@ -29,5 +29,5 @@ const { frontmatter } = ausgabe;
   breadcrumbs={artikelBrotkrumen(ausgabe)}
   jsonLd={[artikelJsonLd(ausgabe)]}
 >
-  {frontmatter.template === "A" ? <ArtikelA ausgabe={ausgabe} /> : <ArtikelB ausgabe={ausgabe} />}
+  {ausgabe.template === "A" ? <ArtikelA ausgabe={ausgabe} /> : <ArtikelB ausgabe={ausgabe} />}
 </BaseLayout>

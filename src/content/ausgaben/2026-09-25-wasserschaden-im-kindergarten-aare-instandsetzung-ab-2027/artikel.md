@@ -1,6 +1,5 @@
 ---
 slug: wasserschaden-im-kindergarten-aare-instandsetzung-ab-2027
-template: B
 headline: 'Wasserschaden im Kindergarten Aare: Instandsetzung ab 2027'
 kategorie: Medienmitteilung
 datePublished: '2026-09-25'

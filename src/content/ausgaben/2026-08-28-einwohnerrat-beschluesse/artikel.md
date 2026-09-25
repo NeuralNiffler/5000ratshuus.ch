@@ -1,6 +1,5 @@
 ---
 slug: "einwohnerrat-beschluesse-24-08-2026"
-template: "A"
 headline: "Einwohnerrat Aarau: neun Beschlüsse aus der Sitzung vom 24. August 2026"
 kategorie: "Amtliche Publikation"
 datePublished: "2026-08-28"

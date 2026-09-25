@@ -89,7 +89,6 @@ kein Begleittext) mit genau dieser Form:
 
 {
   "frontmatter": {
-    "template": "A" | "B",
     "headline": string,
     "kategorie": "Amtliche Publikation" | "Medienmitteilung",
     "description": string (max. 300 Zeichen),
@@ -103,7 +102,7 @@ kein Begleittext) mit genau dieser Form:
     "kennzahlen": { "label": string, "wert": string }[] (optional),
     "forecast": boolean
   },
-  "bodyMarkdown": string (nur bei Template B relevanter Fliesstext, sonst ""),
+  "bodyMarkdown": string (Fliesstext, nur bei genau einem Geschäft relevant, sonst ""),
   "geschaefte": [
     {
       "id": string (stabil, ASCII, z. B. "2026-66-aufloesung"),
@@ -121,6 +120,9 @@ kein Begleittext) mit genau dieser Form:
     }
   ]
 }
+
+Das Layout (Einzelthema oder Beschlussliste) ergibt sich automatisch aus
+der Anzahl Geschäfte und wird nicht von dir gewählt.
 
 Felder wie "slug", "datePublished", "entstehung", "backfill" und
 "newsletter.messageId" werden NICHT von dir gesetzt, sondern deterministisch

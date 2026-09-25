@@ -5,6 +5,7 @@ import { marked } from "marked";
 import {
   ArtikelFrontmatterSchema,
   GeschaeftRawSchema,
+  templateFuer,
   type Ausgabe,
   type Geschaeft,
 } from "./schema";
@@ -113,6 +114,7 @@ export function readAusgabeOrdner(ordner: string, baseDir: string = CONTENT_DIR)
     geschaefte,
     ordner,
     dateModified,
+    template: templateFuer(geschaefte),
   };
 }
 

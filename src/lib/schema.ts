@@ -28,6 +28,15 @@ export type Kategorie = (typeof KATEGORIEN)[number];
 export const TEMPLATES = ["A", "B"] as const;
 export type Template = (typeof TEMPLATES)[number];
 
+/**
+ * Template aus der Anzahl Geschäfte: eines → B (Einzelthema), mehrere → A
+ * (Beschlussliste). Wird berechnet statt im Frontmatter gewählt, siehe
+ * docs/entscheide/2026-09-25-template-aus-anzahl-geschaefte.md.
+ */
+export function templateFuer(geschaefte: readonly unknown[]): Template {
+  return geschaefte.length > 1 ? "A" : "B";
+}
+
 export const ENTSTEHUNG = ["manuell", "pipeline"] as const;
 
 /** Art des Geschäfts, siehe Abschnitt 9. ASCII-Werte, weil sie in Archiv-URLs erscheinen. */
@@ -157,7 +166,6 @@ const kennzahlSchema = z.object({
 export const ArtikelFrontmatterSchema = z
   .object({
     slug: asciiSlug,
-    template: z.enum(TEMPLATES),
     headline: z.string().min(1),
     kategorie: z.enum(KATEGORIEN),
     datePublished: isoDate,
@@ -212,4 +220,6 @@ export interface Ausgabe {
   ordner: string;
   /** dateModified fürs JSON-LD: letzte Korrektur, sonst datePublished. */
   dateModified: string;
+  /** Berechnet aus der Anzahl Geschäfte, siehe templateFuer(). */
+  template: Template;
 }

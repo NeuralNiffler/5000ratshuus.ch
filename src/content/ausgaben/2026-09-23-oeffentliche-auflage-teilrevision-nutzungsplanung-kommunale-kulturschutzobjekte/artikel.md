@@ -1,7 +1,6 @@
 ---
 slug: >-
   oeffentliche-auflage-teilrevision-nutzungsplanung-kommunale-kulturschutzobjekte
-template: A
 headline: >-
   Öffentliche Auflage: Teilrevision Nutzungsplanung Kommunale
   Kulturschutzobjekte

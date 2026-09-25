@@ -1,6 +1,5 @@
 ---
 slug: primarschule-aare-ergebnisse-der-vertieften-qualitaetsueberpruefung
-template: B
 headline: 'Primarschule Aare: Ergebnisse der vertieften Qualitätsüberprüfung'
 kategorie: Medienmitteilung
 datePublished: '2026-09-23'

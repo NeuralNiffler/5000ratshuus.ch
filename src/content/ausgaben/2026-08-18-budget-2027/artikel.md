@@ -1,6 +1,5 @@
 ---
 slug: "budget-2027"
-template: "B"
 headline: "Aarau plant Budget 2027 mit Defizit, hält aber die Schuldenbremse ein"
 kategorie: "Medienmitteilung"
 datePublished: "2026-08-18"

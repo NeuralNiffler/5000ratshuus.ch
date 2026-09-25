@@ -1,6 +1,5 @@
 ---
 slug: stadt-aarau-hebt-feuerwerksverbot-auf
-template: A
 headline: Stadt Aarau hebt Feuerwerksverbot auf
 kategorie: Medienmitteilung
 datePublished: '2026-09-23'

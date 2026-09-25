@@ -1,6 +1,5 @@
 ---
 slug: projektauflage-sanierung-schachenallee
-template: A
 headline: 'Projektauflage: Sanierung Schachenallee'
 kategorie: Amtliche Publikation
 datePublished: '2026-09-23'

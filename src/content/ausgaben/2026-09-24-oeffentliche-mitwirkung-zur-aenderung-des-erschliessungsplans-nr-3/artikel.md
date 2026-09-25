@@ -1,6 +1,5 @@
 ---
 slug: oeffentliche-mitwirkung-zur-aenderung-des-erschliessungsplans-nr-3
-template: A
 headline: Öffentliche Mitwirkung zur Änderung des Erschliessungsplans Nr. 3
 kategorie: Medienmitteilung
 datePublished: '2026-09-24'
