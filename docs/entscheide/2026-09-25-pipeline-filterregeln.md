@@ -42,5 +42,8 @@ vom Workflow committet, auch wenn die Mail aussortiert wurde.
 
 - Fehlerläufe werden nicht committet und stehen deshalb nicht in der CSV.
   Sie sind über Issues mit dem Label `pipeline-fehler` sichtbar.
+- Die Zeilen der Läufe vom 23. bis 25.09.2026 (vor Einführung der CSV)
+  wurden aus den Job Summaries und Step-Logs der Actions-Läufe nachgetragen.
+  `quelle` ist dort immer `claude`, weil es noch keine festen Regeln gab.
 - Jeder Entscheid ist ein Commit auf `main` und löst damit auch einen Build
   bei Cloudflare aus, selbst bei aussortierten Mails.
