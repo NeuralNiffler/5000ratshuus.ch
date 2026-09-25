@@ -161,7 +161,11 @@ async function main() {
     // verifizierbar (siehe Modul-Kommentar in resolve-sources.ts). TODO: als
     // Anreicherungsschritt nach generiereUndSchreibeArtikel ergänzen, sobald
     // aarau.ch wieder erreichbar ist und die Sitzungsarchiv-Struktur bekannt.
-    const kurzlinkMatch = mailKlartext.match(/https?:\/\/(?:www\.)?aarau\.ch\/short\/\S+/i);
+    // Nur die Zeichen des Kurzcodes (z. B. "vlv3QONa") übernehmen: Im Mailtext
+    // steht der Link oft in Klammern oder am Satzende, und ein mitgenommenes
+    // ")" oder "." lässt die Auflösung scheitern (so geschehen bei allen Läufen
+    // vom 23. bis 25.09.2026).
+    const kurzlinkMatch = mailKlartext.match(/https?:\/\/(?:www\.)?aarau\.ch\/short\/[A-Za-z0-9]+/i);
     let quellenText = mailKlartext;
     let quelleAufgeloest: string | undefined;
 
