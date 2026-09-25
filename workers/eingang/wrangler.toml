@@ -1,6 +1,8 @@
 name = "5000ratshuus-eingang"
 main = "src/index.ts"
 compatibility_date = "2026-01-01"
+# Keine öffentliche workers.dev-Adresse: der Worker verarbeitet nur Mails.
+workers_dev = false
 
 # Kein Route-Eintrag: der Worker hat keine HTTP-Schnittstelle. Er wird nur
 # über Cloudflare Email Routing aufgerufen (Cloudflare-Dashboard → Email →

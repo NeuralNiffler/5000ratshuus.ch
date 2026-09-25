@@ -9,6 +9,11 @@ import { bereinigeMailtext } from "./bereinigen";
  * (.github/workflows/pipeline.yml) übergeben. Alles andere geht unverändert
  * an Robin — es geht also nie eine Mail verloren.
  *
+ * Newsletter-Mails gehen zusätzlich als unveränderte Kopie an Robin. Nur dort
+ * stehen die persönlichen Links "Newsletter-Abo ändern/deaktivieren", die
+ * bereinigeMailtext() für das öffentliche Repo entfernt. Ohne Kopie liesse
+ * sich das Abo von newsletter@ nicht mehr verwalten.
+ *
  * Idempotenz (dieselbe Mail zweimal) liegt bewusst nicht hier, sondern in
  * scripts/pipeline/run-pipeline.ts (Abgleich der Message-ID mit den
  * committeten Ausgaben).
@@ -106,6 +111,24 @@ export default {
       return weiterleiten("Message-ID, Betreff oder Text fehlen.");
     }
 
+    // Kopie an Robin. Ein Fehler hier darf die Pipeline nicht aufhalten.
+    let kopieVerschickt = false;
+    try {
+      await message.forward(env.WEITERLEITUNGS_ADRESSE);
+      kopieVerschickt = true;
+      console.log("Kopie an Robin weitergeleitet.");
+    } catch (fehler) {
+      console.error("Kopie an Robin fehlgeschlagen:", fehler);
+    }
+    // Ist die Kopie schon unterwegs, nicht ein zweites Mal weiterleiten.
+    const weiterleitenFallsNoetig = async (grund: string) => {
+      if (kopieVerschickt) {
+        console.warn(`${grund} Kopie liegt bereits bei Robin.`);
+        return;
+      }
+      await weiterleiten(grund);
+    };
+
     const datum = geparst.date ? new Date(geparst.date) : new Date();
     const clientPayload = {
       betreff,
@@ -115,7 +138,7 @@ export default {
     };
 
     if (new TextEncoder().encode(JSON.stringify(clientPayload)).length > MAX_PAYLOAD_BYTES) {
-      return weiterleiten("Mailtext zu gross für repository_dispatch.");
+      return weiterleitenFallsNoetig("Mailtext zu gross für repository_dispatch.");
     }
 
     try {
@@ -123,7 +146,7 @@ export default {
       console.log(`Pipeline ausgelöst für ${messageId}.`);
     } catch (fehler) {
       console.error(fehler);
-      await weiterleiten("Dispatch an GitHub fehlgeschlagen, Mail unverändert weitergeleitet.");
+      await weiterleitenFallsNoetig("Dispatch an GitHub fehlgeschlagen.");
     }
   },
 } satisfies ExportedHandler<Env>;
