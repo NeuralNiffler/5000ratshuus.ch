@@ -146,6 +146,16 @@ aus `src/lib/content.ts`.
    blockiert. Grund: Bei der Netzprüfung können 403/429 einen echten 404
    verdecken (so geschehen bei der Ausgabe 2026-08-28).
 
+**Filter der Pipeline:** Welche Mails zum Artikel werden und welche
+aussortiert wurden, steht in
+[`docs/pipeline-entscheide.csv`](docs/pipeline-entscheide.csv) (eine Zeile
+pro Lauf, vom Workflow committet, nie Mailtext oder `messageId`). Eingreifen:
+Muster für den Betreff in
+[`scripts/pipeline/filter-regeln.json`](scripts/pipeline/filter-regeln.json)
+(`nieAufnehmen` vor `immerAufnehmen` vor Claude), einzelne Mail nachholen
+über den manuellen Workflow-Lauf mit `erzwingen=true`. Siehe
+[`docs/entscheide/2026-09-25-pipeline-filterregeln.md`](docs/entscheide/2026-09-25-pipeline-filterregeln.md).
+
 **Herkunft von Links (Pipeline):** Das Modell darf URLs nur aus dem
 geladenen Quellmaterial übernehmen. `findeUrlsOhneHerkunft()` in
 `scripts/pipeline/resolve-sources.ts` vergleicht jede URL der generierten

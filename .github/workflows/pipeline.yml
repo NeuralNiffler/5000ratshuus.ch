@@ -41,6 +41,11 @@ on:
         description: "Eindeutige Message-ID der Mail (für Idempotenz, F1)"
         required: true
         type: string
+      erzwingen:
+        description: "Filter überspringen und die Mail trotzdem verarbeiten (z. B. fälschlich aussortiert)"
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -60,6 +65,9 @@ jobs:
       BETREFF: ${{ inputs.betreff || github.event.client_payload.betreff }}
       NEWSLETTER_DATUM: ${{ inputs.newsletter_datum || github.event.client_payload.newsletter_datum }}
       MESSAGE_ID: ${{ inputs.message_id || github.event.client_payload.message_id }}
+      # Nur beim manuellen Lauf gesetzt. Leer statt "false", damit die Shell
+      # das Flag per ${ERZWINGEN:+...} weglässt.
+      ERZWINGEN: ${{ inputs.erzwingen == true && 'true' || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -89,7 +97,8 @@ jobs:
             --mailtext-datei "$RUNNER_TEMP/mailtext.txt" \
             --betreff "$BETREFF" \
             --newsletter-datum "$NEWSLETTER_DATUM" \
-            --message-id "$MESSAGE_ID"
+            --message-id "$MESSAGE_ID" \
+            ${ERZWINGEN:+--erzwingen}
 
       - name: Protokoll in Job Summary schreiben
         if: always()
@@ -104,19 +113,26 @@ jobs:
 
       # Direkter Push statt PR: konsistent mit dem bereits getroffenen
       # Entscheid "autonome Publikation ohne Freigabeschritt" (Abschnitt 13).
-      # Nur Dateien unter src/content/ausgaben/ committen — bei "aussortiert"
-      # oder "uebersprungen_bereits_vorhanden" gibt es nichts Neues, der
-      # Commit wird dann übersprungen statt einen leeren zu erzeugen.
-      - name: Neue Ausgabe committen und pushen
+      # Committet die neue Ausgabe (falls vorhanden) und immer die Zeile in
+      # docs/pipeline-entscheide.csv, damit auch aussortierte Mails im Repo
+      # nachvollziehbar sind. Fehlerläufe erreichen diesen Schritt nicht, sie
+      # sind über das Issue "pipeline-fehler" sichtbar.
+      - name: Neue Ausgabe und Entscheid committen und pushen
         if: success()
         run: |
           git config user.name "5000ratshuus-pipeline[bot]"
           git config user.email "actions@users.noreply.github.com"
           git add src/content/ausgaben/
           if git diff --cached --quiet; then
-            echo "Keine neuen Dateien zu committen (Ausgabe vermutlich aussortiert oder bereits vorhanden)."
+            nachricht="Pipeline-Entscheid: $BETREFF"
           else
-            git commit -m "Automatisch erzeugte Ausgabe: $BETREFF"
+            nachricht="Automatisch erzeugte Ausgabe: $BETREFF"
+          fi
+          git add docs/pipeline-entscheide.csv
+          if git diff --cached --quiet; then
+            echo "Nichts zu committen."
+          else
+            git commit -m "$nachricht"
             git push
           fi
 

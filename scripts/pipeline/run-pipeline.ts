@@ -14,17 +14,23 @@
  * die Quelle der Wahrheit, kein separater State-Store nötig.
  *
  *   npm run pipeline:run -- --mailtext-datei <pfad> --betreff "..." \
- *     --newsletter-datum "28.08.2026" --message-id "<...>"
+ *     --newsletter-datum "28.08.2026" --message-id "<...>" [--erzwingen]
+ *
+ * Filter (siehe docs/entscheide/2026-09-25-pipeline-filterregeln.md):
+ * --erzwingen vor "nie aufnehmen" vor "immer aufnehmen" (filter-regeln.json)
+ * vor der Kategorisierung durch Claude. Jeder Entscheid landet zusätzlich
+ * als Zeile in docs/pipeline-entscheide.csv, die der Workflow committet.
  *
  * Die Mailtext-Datei ist lokal und wird NIE committet (siehe
  * pipeline-testdaten/ in .gitignore) — der öffentliche Charakter des Repos
  * verbietet unbereinigte Rohmails im Verlauf (siehe stack.md).
  */
-import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
+import { readFileSync, mkdirSync, writeFileSync, existsSync, appendFileSync } from "node:fs";
 import { join } from "node:path";
 import { getAllAusgaben, readAusgabeOrdner } from "../../src/lib/content.ts";
 import { pruefeAusgabe } from "../../src/lib/checks.ts";
 import { kategorisiereAusgabe } from "./categorize.ts";
+import { ladeFilterRegeln, pruefeFilterRegeln } from "./apply-filter-rules.ts";
 import { loeseKurzlinkAuf, ladeSeiteAlsText } from "./resolve-sources.ts";
 import { generiereUndSchreibeArtikel } from "./generate-article.ts";
 import { holeVerbrauch, type Verbrauch } from "./claude-client.ts";
@@ -34,6 +40,10 @@ interface PipelineProtokoll {
   messageId: string;
   betreff: string;
   entscheid: "verarbeitet" | "uebersprungen_bereits_vorhanden" | "aussortiert" | "fehler";
+  /** Wer entschieden hat, ob die Mail zum Artikel wird. */
+  quelle?: "claude" | "regel" | "erzwungen" | "idempotenz";
+  /** Kategorie laut Claude, nur wenn Claude kategorisiert hat. */
+  kategorie?: string;
   grund: string;
   ordner?: string;
   quelleAufgeloest?: string;
@@ -48,7 +58,26 @@ function leseArg(name: string): string | undefined {
   return index >= 0 ? process.argv[index + 1] : undefined;
 }
 
+const ENTSCHEIDE_CSV = join(process.cwd(), "docs/pipeline-entscheide.csv");
+const CSV_SPALTEN = ["zeitpunkt", "betreff", "entscheid", "quelle", "kategorie", "grund", "ordner"] as const;
+
+function csvFeld(wert: string | undefined): string {
+  const text = (wert ?? "").replace(/\r?\n/g, " ");
+  return /[",]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+}
+
+/**
+ * Hängt den Entscheid an die versionierte Liste an. Nie Mailtext oder
+ * messageId: das Repo ist öffentlich, Betreff und Grund sind unkritisch.
+ */
+function schreibeEntscheidZeile(protokoll: PipelineProtokoll) {
+  if (!existsSync(ENTSCHEIDE_CSV)) writeFileSync(ENTSCHEIDE_CSV, CSV_SPALTEN.join(",") + "\n");
+  const zeile = CSV_SPALTEN.map((spalte) => csvFeld(protokoll[spalte])).join(",");
+  appendFileSync(ENTSCHEIDE_CSV, zeile + "\n");
+}
+
 function schreibeProtokoll(protokoll: PipelineProtokoll) {
+  schreibeEntscheidZeile(protokoll);
   const dir = join(process.cwd(), ".build/pipeline-log");
   mkdirSync(dir, { recursive: true });
   const pfad = join(dir, `${Date.now()}.json`);
@@ -62,6 +91,7 @@ async function main() {
   const betreff = leseArg("betreff");
   const newsletterDatum = leseArg("newsletter-datum");
   const messageId = leseArg("message-id");
+  const erzwingen = process.argv.includes("--erzwingen");
 
   if (!mailtextDatei || !betreff || !newsletterDatum || !messageId) {
     console.error(
@@ -82,6 +112,7 @@ async function main() {
       messageId,
       betreff,
       entscheid: "uebersprungen_bereits_vorhanden",
+      quelle: "idempotenz",
       grund: `Bereits verarbeitet als Ausgabe "${bestehende.ordner}".`,
     };
     schreibeProtokoll(protokoll);
@@ -90,18 +121,34 @@ async function main() {
   }
 
   try {
-    const kategorisierung = await kategorisiereAusgabe(mailKlartext, betreff);
-    console.log(`Kategorisierung: ${kategorisierung.kategorie}, relevant: ${kategorisierung.relevant}`);
-    console.log(`Grund: ${kategorisierung.grund}`);
+    // Filter: erzwingen → feste Regeln → Claude.
+    let quelle: NonNullable<PipelineProtokoll["quelle"]>;
+    let kategorie: string | undefined;
+    let aufnahmeGrund: string;
+    const regelTreffer = erzwingen ? null : pruefeFilterRegeln(betreff, ladeFilterRegeln());
 
-    if (!kategorisierung.relevant) {
-      schreibeProtokoll({
-        zeitpunkt,
-        messageId,
-        betreff,
-        entscheid: "aussortiert",
-        grund: `Kategorie "${kategorisierung.kategorie}": ${kategorisierung.grund}`,
-      });
+    if (erzwingen) {
+      quelle = "erzwungen";
+      aufnahmeGrund = "Manuell erzwungen (--erzwingen).";
+    } else if (regelTreffer) {
+      quelle = "regel";
+      const regelName = regelTreffer.entscheid === "aussortieren" ? "nie aufnehmen" : "immer aufnehmen";
+      aufnahmeGrund = `Regel "${regelName}": ${regelTreffer.muster}`;
+    } else {
+      quelle = "claude";
+      const kategorisierung = await kategorisiereAusgabe(mailKlartext, betreff);
+      kategorie = kategorisierung.kategorie;
+      aufnahmeGrund = kategorisierung.grund;
+      console.log(`Kategorisierung: ${kategorisierung.kategorie}, relevant: ${kategorisierung.relevant}`);
+      if (!kategorisierung.relevant) {
+        schreibeProtokoll({ zeitpunkt, messageId, betreff, entscheid: "aussortiert", quelle, kategorie, grund: aufnahmeGrund });
+        process.exit(0);
+      }
+    }
+    console.log(`Filter (${quelle}): ${aufnahmeGrund}`);
+
+    if (regelTreffer?.entscheid === "aussortieren") {
+      schreibeProtokoll({ zeitpunkt, messageId, betreff, entscheid: "aussortiert", quelle, grund: aufnahmeGrund });
       process.exit(0);
     }
 
@@ -152,9 +199,11 @@ async function main() {
       messageId,
       betreff,
       entscheid: "verarbeitet",
+      quelle,
+      kategorie,
       grund: pruefResultat.bestanden
-        ? "Alle Prüfungen bestanden, bereit für Commit durch den Workflow."
-        : "Mindestens eine Prüfung fehlgeschlagen, siehe pruefungenBestanden.",
+        ? aufnahmeGrund
+        : `${aufnahmeGrund} Mindestens eine Prüfung fehlgeschlagen, siehe pruefungenBestanden.`,
       ordner: generiert.ordner,
       quelleAufgeloest,
       pruefungenBestanden: pruefResultat.bestanden,
