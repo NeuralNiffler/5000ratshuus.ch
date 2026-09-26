@@ -21,17 +21,37 @@ export interface AufgeloesteQuelle {
   erreichbarkeit: UrlPruefErgebnis;
 }
 
+const TIMEOUT_MS = 8000;
+const PAUSE_VOR_WIEDERHOLUNG_MS = 3000;
+
+/**
+ * fetch mit einem zweiten Versuch, wenn die Anfrage gar keine Antwort bekommt
+ * (Timeout, Netzwerkfehler). aarau.ch antwortet aus GitHub Actions zeitweise
+ * nicht innerhalb der Frist (Läufe vom 2026-09-23 und 2026-09-26), beim
+ * nächsten Versuch aber sofort. Eine HTTP-Antwort (403, 404, 429 usw.) wird
+ * nicht wiederholt, sondern unverändert zurückgegeben: Die Bewertung bleibt
+ * Sache des Aufrufers, es wird keine Prüfung aufgeweicht.
+ */
+async function fetchMitWiederholung(url: string, init: RequestInit, timeoutMs: number): Promise<Response> {
+  try {
+    return await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+  } catch (err) {
+    console.warn(
+      `Keine Antwort von ${url} (${err instanceof Error ? err.message : String(err)}), ` +
+        `neuer Versuch in ${PAUSE_VOR_WIEDERHOLUNG_MS / 1000} s.`,
+    );
+    await new Promise((resolve) => setTimeout(resolve, PAUSE_VOR_WIEDERHOLUNG_MS));
+    return await fetch(url, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+  }
+}
+
 /**
  * Folgt einem Kurzlink (z. B. aarau.ch/short/...) bis zur Ziel-URL, ohne den
  * Seiteninhalt zu laden. Generisch, nicht aarau.ch-spezifisch — funktioniert
  * unabhängig vom aktuellen 403-Befund für jeden Standard-HTTP-Redirect.
  */
 export async function loeseKurzlinkAuf(url: string, opts?: { timeoutMs?: number }): Promise<string> {
-  const response = await fetch(url, {
-    method: "HEAD",
-    redirect: "follow",
-    signal: AbortSignal.timeout(opts?.timeoutMs ?? 8000),
-  });
+  const response = await fetchMitWiederholung(url, { method: "HEAD", redirect: "follow" }, opts?.timeoutMs ?? TIMEOUT_MS);
   return response.url || url;
 }
 
@@ -66,10 +86,7 @@ export function findePdfLinkFuerGeschaeft(sitzungsseiteHtml: string, geschaeftsn
  */
 export async function ladeSeiteAlsText(url: string, opts?: { timeoutMs?: number }): Promise<string | null> {
   try {
-    const response = await fetch(url, {
-      redirect: "follow",
-      signal: AbortSignal.timeout(opts?.timeoutMs ?? 8000),
-    });
+    const response = await fetchMitWiederholung(url, { redirect: "follow" }, opts?.timeoutMs ?? TIMEOUT_MS);
     if (!response.ok) return null;
     return await response.text();
   } catch {
