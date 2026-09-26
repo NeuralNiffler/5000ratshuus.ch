@@ -91,7 +91,12 @@ export async function generiereUndSchreibeArtikel(
   kontext: GenerierungsKontext,
 ): Promise<GeneriertesArtikelErgebnis> {
   const prompt = buildGenerierungsPrompt(kontext.quellenText, kontext.betreff, kontext.newsletterDatum);
-  const antwort = await rufeClaudeJsonAuf(prompt, { maxTokens: 8000 });
+  // 16000 statt 8000: Die Beschlüsse einer Einwohnerratssitzung mit vielen
+  // Geschäften haben 8000 überschritten (Lauf vom 2026-09-26). Sonnet 5 denkt
+  // ohne thinking-Angabe adaptiv, diese Tokens zählen mit. Höher nur mit
+  // Streaming: Ohne Streaming kommt die Antwort erst am Schluss, und fetch
+  // (undici) bricht nach 300 s ohne Antwort-Header ab.
+  const antwort = await rufeClaudeJsonAuf(prompt, { maxTokens: 16000 });
 
   if (!istObjekt(antwort)) {
     throw new Error("Generierungs-Antwort ist kein JSON-Objekt.");
