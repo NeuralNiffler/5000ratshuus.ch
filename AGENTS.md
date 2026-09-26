@@ -97,8 +97,12 @@ verworfene Alternativen; hier nur die Umsetzung:
   für das genaue Datum. Einzige Ausnahme vom unbeaufsichtigten Betrieb, weil
   ein falsch übertragenes Datum eine echte Frist verpassen lassen könnte und
   das nachträglich nicht mehr korrigierbar ist. Technisch erzwungen in
-  `assertKeinFristdatum()` in `src/lib/content.ts` (Heuristik: bricht den
-  Build ab, wenn ein Datum in der Nähe des Worts "Frist" auftaucht).
+  `assertKeinFristdatum()` in `src/lib/content.ts`. Die Heuristik arbeitet in
+  zwei Stufen: Bei referendumspflichtigen Geschäften bricht jedes Datum in der
+  Nähe von "Frist" den Build ab. Sonst gilt das nur für ein Datum in der Nähe
+  von "Referendum" oder "Unterschrift". Andere Fristen (Bewerbung, Einsprache)
+  dürfen ein Datum haben, siehe
+  [`docs/entscheide/2026-09-26-fristdatum-pruefung-enger.md`](docs/entscheide/2026-09-26-fristdatum-pruefung-enger.md).
 - Eine **Bürgermotion** ist ein Bevölkerungsanliegen, keine gewöhnliche Motion.
 - Nur Motionen/Postulate **amtierender Ratsmitglieder** gehören in die Gruppe
   „Motionen & Postulate".
@@ -136,7 +140,8 @@ aus `src/lib/content.ts`.
 
 1. Kein Datum einer Referendumsfrist im Artikeltext (hart, blockiert) — läuft
    beim Einlesen in `content.ts` (`assertKeinFristdatum`), auch pro Geschäft
-   (`titel`, `ereignis`, `kurztext`), nicht nur im Artikeltext.
+   (`titel`, `ereignis`, `kurztext`), nicht nur im Artikeltext. Zweistufig
+   nach `referendumspflichtig`, siehe Redaktionelle Regeln oben.
 2. Jedes Geschäft hat mindestens eine erreichbare Quell-URL, geprüft über
    [`src/lib/url-check.ts`](src/lib/url-check.ts) (`npm run check:artikel --
    --offline` überspringt diese Prüfung für schnelle lokale Iteration).

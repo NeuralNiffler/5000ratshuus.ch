@@ -60,6 +60,11 @@ description, ogDescription) und jede Ausgabe ohne Ausnahme. Ein falsch
 übertragenes Datum könnte jemanden eine echte Unterschriftenfrist verpassen
 lassen — anders als andere Fehler ist das nach Ablauf nicht mehr
 korrigierbar.
+
+Andere Fristen (z. B. Bewerbungs-, Eingabe- oder Einsprachefrist) dürfen mit
+Datum genannt werden. Ist ein Geschäft referendumspflichtig, steht in dieser
+Ausgabe aber gar kein Datum neben dem Wort "Frist", damit keine Verwechslung
+mit der Referendumsfrist möglich ist.
 `.trim();
 
 export const SCHREIBREGELN = `

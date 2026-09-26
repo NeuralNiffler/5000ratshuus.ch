@@ -4,7 +4,10 @@
  * Publikation nachweislich." Bewusst kein Testrunner (Nutzerentscheid) —
  * ein On-Demand-Skript, das eine Ausgabe kopiert, unverändert als
  * Negativkontrolle einliest, dann ein Fristdatum einbaut und den Abbruch
- * erwartet.
+ * erwartet. Dazu zwei Proben für die zweistufige Prüfung (siehe
+ * docs/entscheide/2026-09-26-fristdatum-pruefung-enger.md): eine
+ * Bewerbungsfrist mit Datum geht bei einem nicht referendumspflichtigen
+ * Geschäft durch und blockiert bei einem referendumspflichtigen.
  *
  *   npm run demo:fristdatum-block
  */
@@ -19,41 +22,89 @@ const DEMO_ORDNER = "demo-fristdatum";
 // Unter .build/ (bereits gitignored), nicht in src/content/ausgaben/, damit
 // die Demo nie versehentlich als echte Ausgabe eingelesen oder committet wird.
 const baseDir = join(process.cwd(), ".build", `demo-fristdatum-${Date.now()}`);
-const zielDir = join(baseDir, DEMO_ORDNER);
 mkdirSync(baseDir, { recursive: true });
 
 function aufraeumen() {
   rmSync(baseDir, { recursive: true, force: true });
 }
 
-try {
-  cpSync(QUELL_DIR, zielDir, { recursive: true });
-
-  // 1. Negativkontrolle: unverändert eingelesen darf NICHT werfen.
-  readAusgabeOrdner(DEMO_ORDNER, baseDir);
-  console.log(`✓ Negativkontrolle bestanden: "${QUELL_ORDNER}" wird unverändert ohne Fehler eingelesen.`);
-
-  // 2. Fristdatum in ein Geschäft einbauen.
-  const geschaeftePath = join(zielDir, "geschaefte.json");
+/**
+ * Frische Kopie der Quellausgabe, erstes Geschäft verändert, dann einlesen.
+ * Gibt die Fehlermeldung zurück oder null, wenn das Einlesen durchging.
+ */
+function probe(nr: number, veraendere: (geschaeft: Record<string, unknown>) => void): string | null {
+  const ordner = `${DEMO_ORDNER}-${nr}`;
+  const dir = join(baseDir, ordner);
+  cpSync(QUELL_DIR, dir, { recursive: true });
+  const geschaeftePath = join(dir, "geschaefte.json");
   const geschaefte = JSON.parse(readFileSync(geschaeftePath, "utf-8"));
-  geschaefte[0].kurztext =
-    (geschaefte[0].kurztext ?? "") + " Die Referendumsfrist läuft bis 18. September 2026.";
+  veraendere(geschaefte[0]);
   writeFileSync(geschaeftePath, JSON.stringify(geschaefte, null, 2));
-
-  // 3. Erneutes Einlesen MUSS werfen.
   try {
-    readAusgabeOrdner(DEMO_ORDNER, baseDir);
-    console.error("✗ Nachweis NICHT erbracht: readAusgabeOrdner hat trotz Fristdatum nicht geworfen.");
-    process.exitCode = 1;
+    readAusgabeOrdner(ordner, baseDir);
+    return null;
   } catch (err) {
-    const meldung = err instanceof Error ? err.message : String(err);
-    if (/frist/i.test(meldung)) {
-      console.log(`✓ Nachweis erbracht: Einlesen wurde blockiert.\n  Meldung: ${meldung}`);
-    } else {
-      console.error(`✗ Es wurde geworfen, aber nicht wegen des Fristdatums: ${meldung}`);
-      process.exitCode = 1;
-    }
+    return err instanceof Error ? err.message : String(err);
   }
+}
+
+function erwarteBlock(beschreibung: string, meldung: string | null) {
+  if (meldung === null) {
+    console.error(`✗ ${beschreibung}: hätte blockieren müssen, wurde aber eingelesen.`);
+    process.exitCode = 1;
+  } else if (!/frist/i.test(meldung)) {
+    console.error(`✗ ${beschreibung}: geworfen, aber nicht wegen des Fristdatums: ${meldung}`);
+    process.exitCode = 1;
+  } else {
+    console.log(`✓ ${beschreibung}: blockiert.\n  Meldung: ${meldung}`);
+  }
+}
+
+function erwarteDurchgang(beschreibung: string, meldung: string | null) {
+  if (meldung === null) {
+    console.log(`✓ ${beschreibung}: eingelesen.`);
+  } else {
+    console.error(`✗ ${beschreibung}: hätte durchgehen müssen: ${meldung}`);
+    process.exitCode = 1;
+  }
+}
+
+const anhaengen = (g: Record<string, unknown>, satz: string) => {
+  g.kurztext = `${(g.kurztext as string | null) ?? ""} ${satz}`;
+};
+
+try {
+  // 1. Negativkontrolle: unverändert eingelesen darf NICHT werfen.
+  erwarteDurchgang(`Negativkontrolle, "${QUELL_ORDNER}" unverändert`, probe(1, () => {}));
+
+  // 2. Nachweis: Referendumsfrist mit Datum MUSS blockieren, egal ob das
+  //    Geschäft als referendumspflichtig markiert ist.
+  erwarteBlock(
+    "Referendumsfrist mit Datum",
+    probe(2, (g) => {
+      g.referendumspflichtig = false;
+      anhaengen(g, "Die Referendumsfrist läuft bis 18. September 2026.");
+    }),
+  );
+
+  // 3. Andere Frist bei nicht referendumspflichtigem Geschäft: erlaubt.
+  erwarteDurchgang(
+    "Bewerbungsfrist mit Datum, nicht referendumspflichtig",
+    probe(3, (g) => {
+      g.referendumspflichtig = false;
+      anhaengen(g, "Die Bewerbungsfrist läuft bis 26. Oktober 2026.");
+    }),
+  );
+
+  // 4. Dieselbe Frist bei referendumspflichtigem Geschäft: blockiert, weil
+  //    sie mit der Referendumsfrist verwechselt werden könnte.
+  erwarteBlock(
+    "Bewerbungsfrist mit Datum, referendumspflichtig",
+    probe(4, (g) => {
+      g.referendumspflichtig = true;
+      anhaengen(g, "Die Bewerbungsfrist läuft bis 26. Oktober 2026.");
+    }),
+  );
 } finally {
   aufraeumen();
 }

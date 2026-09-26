@@ -91,13 +91,17 @@ export function readAusgabeOrdner(ordner: string, baseDir: string = CONTENT_DIR)
   // Fliesstext, in den Metadaten oder in den einzelnen Geschäften. Das ist
   // die einzige Ausnahme vom unbeaufsichtigten Betrieb (Abschnitt 6) und wird
   // deshalb schon hier, beim Einlesen, hart erzwungen statt erst später.
-  assertKeinFristdatum(ordner, "description", frontmatter.description);
-  assertKeinFristdatum(ordner, "ogDescription", frontmatter.ogDescription ?? "");
-  assertKeinFristdatum(ordner, "artikel.md Fliesstext", bodyMarkdown);
+  // Streng (jedes Datum neben "Frist") nur, wo ein Referendum im Spiel ist,
+  // siehe docs/entscheide/2026-09-26-fristdatum-pruefung-enger.md.
+  const ausgabeStreng = geschaefte.some((g) => g.referendumspflichtig);
+  assertKeinFristdatum(ordner, "description", frontmatter.description, ausgabeStreng);
+  assertKeinFristdatum(ordner, "ogDescription", frontmatter.ogDescription ?? "", ausgabeStreng);
+  assertKeinFristdatum(ordner, "artikel.md Fliesstext", bodyMarkdown, ausgabeStreng);
   for (const g of geschaefte) {
-    assertKeinFristdatum(ordner, `Geschäft "${g.id}" (titel)`, g.titel);
-    assertKeinFristdatum(ordner, `Geschäft "${g.id}" (ereignis)`, g.ereignis ?? "");
-    assertKeinFristdatum(ordner, `Geschäft "${g.id}" (kurztext)`, g.kurztext ?? "");
+    const streng = g.referendumspflichtig;
+    assertKeinFristdatum(ordner, `Geschäft "${g.id}" (titel)`, g.titel, streng);
+    assertKeinFristdatum(ordner, `Geschäft "${g.id}" (ereignis)`, g.ereignis ?? "", streng);
+    assertKeinFristdatum(ordner, `Geschäft "${g.id}" (kurztext)`, g.kurztext ?? "", streng);
   }
 
   const bodyHtml = bodyMarkdown.trim().length > 0 ? (marked.parse(bodyMarkdown) as string) : "";
@@ -120,26 +124,35 @@ export function readAusgabeOrdner(ordner: string, baseDir: string = CONTENT_DIR)
 
 /**
  * Erkennt ein konkretes Referendumsfrist-Datum im Text. Die Regel aus
- * Abschnitt 6 verbietet jedes Datum im Kontext einer Frist, nicht nur ein
- * bestimmtes bekanntes Datum. Diese Heuristik prüft deshalb auf das Wort
- * "Frist" in der Nähe eines Datumsformats (ausgeschriebener Monatsname oder
- * ISO). Das ist Prüfung 1 aus Abschnitt 8 (Phase 1b) — die einzige der acht
+ * Abschnitt 6 verbietet jedes Datum einer Referendumsfrist, nicht nur ein
+ * bestimmtes bekanntes Datum. Diese Heuristik sucht deshalb Datumsformate
+ * (ausgeschriebener Monatsname oder ISO) und prüft die Umgebung (80 Zeichen):
+ *
+ * - streng (die Ausgabe bzw. das Geschäft ist referendumspflichtig): jedes
+ *   Datum in der Nähe von "Frist" blockiert, auch wenn das Wort "Referendum"
+ *   nicht danebensteht.
+ * - sonst: nur ein Datum in der Nähe von "Referendum" oder "Unterschrift".
+ *   Andere Fristen (Bewerbung, Einsprache, Mitwirkung) dürfen ein Datum haben,
+ *   siehe docs/entscheide/2026-09-26-fristdatum-pruefung-enger.md.
+ *
+ * Das ist Prüfung 1 aus Abschnitt 8 (Phase 1b) — die einzige der acht
  * Prüfungen, die hart beim Einlesen statt in src/lib/checks.ts läuft, weil
  * ein falsch übertragenes Fristdatum nicht nachträglich korrigierbar ist.
  */
-function assertKeinFristdatum(ordner: string, feld: string, text: string): void {
+function assertKeinFristdatum(ordner: string, feld: string, text: string, streng: boolean): void {
   const datumsMuster = /\b\d{1,2}\.\s?(Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember)\s?\d{4}\b|\b\d{4}-\d{2}-\d{2}\b/gi;
-  // Bewusst eng: nur "Frist" selbst (Referendumsfrist, Unterschriftenfrist),
-  // nicht "referendumspflichtig" oder das Sitzungs-/Publikationsdatum, die
-  // beide unproblematisch neben einem Datum stehen dürfen.
-  const fristKontext = /frist/i;
+  // Nie "referendumspflichtig" allein als Treffer werten: Sitzungs- und
+  // Publikationsdatum stehen oft daneben. "referendum(?!spflicht)" schliesst
+  // es aus, "Referendumsfrist" und "Referendum ergreifen" bleiben erfasst.
+  const fristKontext = streng ? /frist/i : /referendum(?!spflicht)|unterschrift/i;
   for (const match of text.matchAll(datumsMuster)) {
     const start = Math.max(0, match.index! - 80);
     const end = Math.min(text.length, match.index! + match[0].length + 80);
     const umgebung = text.slice(start, end);
     if (fristKontext.test(umgebung)) {
       throw new Error(
-        `Ausgabe "${ordner}": ${feld} enthält ein Datum in der Nähe von "Frist" ` +
+        `Ausgabe "${ordner}": ${feld} enthält ein Datum in der Nähe von ` +
+          `"${streng ? "Frist" : "Referendum/Unterschrift"}" ` +
           `("${match[0]}"). Die Referendumsfrist darf nie als Datum gezeigt werden (Abschnitt 6).`,
       );
     }
