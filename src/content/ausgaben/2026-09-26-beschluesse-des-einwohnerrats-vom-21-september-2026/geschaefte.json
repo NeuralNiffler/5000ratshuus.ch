@@ -1,0 +1,93 @@
+[
+  {
+    "id": "2026-budget-2027",
+    "titel": "Budget 2027 der Einwohnergemeinde Aarau",
+    "art": "sonstiges",
+    "urheber": null,
+    "ereignis": null,
+    "referendumspflichtig": false,
+    "tags": [
+      "Finanzen"
+    ],
+    "sitzungsdatum": "2026-09-21",
+    "publikationsdatum": "2026-09-25",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/aktuelles.html/204/news/11852",
+        "label": "Amtliche Publikation Stadt Aarau",
+        "typ": "amtliche_publikation"
+      }
+    ],
+    "gruppe": "sonstige",
+    "kurztext": "Der Einwohnerrat hat das Budget 2027 mit einem Steuerfuss von 96 % genehmigt. Die Bevölkerung stimmt am 29. November 2026 an der Urne darüber ab."
+  },
+  {
+    "id": "2026-vk-rodungsweg",
+    "titel": "Verpflichtungskredit für Sanierung Zivilschutzanlage Rodungsweg 14",
+    "art": "kredit",
+    "urheber": null,
+    "ereignis": null,
+    "referendumspflichtig": true,
+    "tags": [
+      "Bauen & Planung",
+      "Sicherheit & Ordnung"
+    ],
+    "sitzungsdatum": "2026-09-21",
+    "publikationsdatum": "2026-09-25",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/aktuelles.html/204/news/11852",
+        "label": "Amtliche Publikation Stadt Aarau",
+        "typ": "amtliche_publikation"
+      }
+    ],
+    "gruppe": "sonstige",
+    "kurztext": "Der Einwohnerrat hat einen Verpflichtungskredit von 3'330'000 Franken inkl. 8.1 % MwSt. für die Sanierung der Zivilschutzanlage Rodungsweg 14 in Aarau Rohr gutgeheissen. Für dieses Geschäft läuft eine Referendumsfrist, deren Datum in der amtlichen Quelle nachzulesen ist."
+  },
+  {
+    "id": "2026-pk-sporthalle-schachen",
+    "titel": "Planungskredit für Variantenstudie Sporthalle Schachen",
+    "art": "kredit",
+    "urheber": null,
+    "ereignis": null,
+    "referendumspflichtig": true,
+    "tags": [
+      "Kultur, Sport & Freizeit",
+      "Bauen & Planung"
+    ],
+    "sitzungsdatum": "2026-09-21",
+    "publikationsdatum": "2026-09-25",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/aktuelles.html/204/news/11852",
+        "label": "Amtliche Publikation Stadt Aarau",
+        "typ": "amtliche_publikation"
+      }
+    ],
+    "gruppe": "sonstige",
+    "kurztext": "Der Einwohnerrat hat einen Planungskredit von 150'000 Franken inkl. 8.1 % MwSt. für eine Variantenstudie zur Sporthalle Schachen bewilligt. Für dieses Geschäft läuft eine Referendumsfrist, deren Datum in der amtlichen Quelle nachzulesen ist."
+  },
+  {
+    "id": "2026-reglement-rafk",
+    "titel": "Reglement über die Angebote der frühen Kindheit (RAfK)",
+    "art": "reglement",
+    "urheber": null,
+    "ereignis": null,
+    "referendumspflichtig": true,
+    "tags": [
+      "Gesellschaft & Soziales",
+      "Bildung & Schule"
+    ],
+    "sitzungsdatum": "2026-09-21",
+    "publikationsdatum": "2026-09-25",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/politik/einwohnerrat/sitzungen-einwohnerrat-2026.html/2823",
+        "label": "Reglement über die Angebote der frühen Kindheit (RAfK)",
+        "typ": "reglement"
+      }
+    ],
+    "gruppe": "sonstige",
+    "kurztext": "Der Einwohnerrat hat das Reglement über die Angebote der frühen Kindheit (RAfK) gutgeheissen. Für dieses Geschäft läuft eine Referendumsfrist, deren Datum in der amtlichen Quelle nachzulesen ist."
+  }
+]
