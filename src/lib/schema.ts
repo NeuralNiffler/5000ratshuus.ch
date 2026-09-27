@@ -39,26 +39,37 @@ export function templateFuer(geschaefte: readonly unknown[]): Template {
 
 export const ENTSTEHUNG = ["manuell", "pipeline"] as const;
 
-/** Art des Geschäfts, siehe Abschnitt 9. ASCII-Werte, weil sie in Archiv-URLs erscheinen. */
+/**
+ * Art des Geschäfts, siehe Abschnitt 9. Die Art beschreibt das Verfahren
+ * (wer entscheidet oder auf welchem Weg der Eintrag entsteht), nie den
+ * Gegenstand: ein Kredit oder Reglement des Einwohnerrats ist "ratsbeschluss",
+ * der Gegenstand steht im Titel, das Sachgebiet in den Themen-Tags.
+ * ASCII-Werte, weil sie in Archiv-URLs erscheinen. Die Reihenfolge ist auch
+ * die Anzeigereihenfolge. Siehe docs/entscheide/2026-09-27-art-nach-verfahren.md.
+ */
 export const GESCHAEFT_ARTEN = [
+  "volksabstimmung",
+  "ratsbeschluss",
   "wahl",
   "motion",
   "postulat",
   "buergermotion",
-  "reglement",
-  "kredit",
+  "stadtrat",
+  "auflage",
   "sonstiges",
 ] as const;
 export type GeschaeftArt = (typeof GESCHAEFT_ARTEN)[number];
 
 /** Anzeige-Label pro Art, für Überschriften und Tabellen. */
 export const GESCHAEFT_ART_LABEL: Record<GeschaeftArt, string> = {
+  volksabstimmung: "Volksabstimmung",
+  ratsbeschluss: "Beschluss Einwohnerrat",
   wahl: "Wahl",
   motion: "Motion",
   postulat: "Postulat",
   buergermotion: "Bürgermotion",
-  reglement: "Reglement",
-  kredit: "Kredit",
+  stadtrat: "Stadtrat",
+  auflage: "Auflage & Mitwirkung",
   sonstiges: "Sonstiges",
 };
 

@@ -2,7 +2,7 @@
   {
     "id": "ksab-aufloesung",
     "titel": "Auflösung der Kreisschule Aarau-Buchs",
-    "art": "sonstiges",
+    "art": "ratsbeschluss",
     "urheber": null,
     "ereignis": null,
     "referendumspflichtig": true,
@@ -22,7 +22,7 @@
   {
     "id": "wosa-reglement",
     "titel": "Neuer Bereich «Bildung» im WOSA-Reglement",
-    "art": "reglement",
+    "art": "ratsbeschluss",
     "urheber": null,
     "ereignis": null,
     "referendumspflichtig": true,
@@ -162,7 +162,7 @@
   {
     "id": "trinkwasserqualitaet",
     "titel": "Mehr Transparenz bei der Trinkwasserqualität in Aarau",
-    "art": "sonstiges",
+    "art": "ratsbeschluss",
     "urheber": { "name": "Julius Felix und Mitunterzeichnende", "partei": null },
     "ereignis": "Aufgenommen",
     "referendumspflichtig": false,

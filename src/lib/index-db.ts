@@ -204,12 +204,14 @@ export function getDistinctTags(): string[] {
   );
 }
 
+/** Vorkommende Arten in der Reihenfolge von GESCHAEFT_ARTEN (Verfahren, nicht Alphabet). */
 export function getDistinctArten(): GeschaeftArt[] {
-  return withDb((db) =>
-    (db.prepare(`SELECT DISTINCT art FROM geschaefte ORDER BY art`).all() as { art: GeschaeftArt }[]).map(
-      (r) => r.art,
+  const vorhanden = new Set(
+    withDb((db) =>
+      (db.prepare(`SELECT DISTINCT art FROM geschaefte`).all() as { art: GeschaeftArt }[]).map((r) => r.art),
     ),
-  ).filter((art) => GESCHAEFT_ARTEN.includes(art));
+  );
+  return GESCHAEFT_ARTEN.filter((art) => vorhanden.has(art));
 }
 
 export function getGeschaefteByTag(tag: string): ArchivEintrag[] {

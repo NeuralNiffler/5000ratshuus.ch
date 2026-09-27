@@ -9,9 +9,10 @@
  * die alten HTML-Templates aus SKILL.md. Die Kategorisierungs- und
  * Schreibregeln sind identisch, nur die Zielstruktur ist neu.
  */
-import { MAX_THEMEN, THEMEN } from "../../src/lib/schema.ts";
+import { GESCHAEFT_ARTEN, MAX_THEMEN, THEMEN } from "../../src/lib/schema.ts";
 
 const THEMEN_LISTE = THEMEN.map((t) => `"${t}"`).join(", ");
+const ARTEN_LISTE = GESCHAEFT_ARTEN.map((a) => `"${a}"`).join(" | ");
 
 export const KATEGORISIERUNGSREGELN = `
 - Eine Bürgermotion ist ein Bevölkerungsanliegen, keine gewöhnliche Motion.
@@ -47,6 +48,16 @@ export const KATEGORISIERUNGSREGELN = `
 - "Politik" umfasst den politischen Betrieb selbst: Wahlen und Ersatzwahlen
   in Rat und Kommissionen, Stimmenzähler, Ratsorganisation. "Verwaltung &
   Organisation" ist dagegen die Stadtverwaltung (z. B. WOSA-Reglement).
+- Die Art (art) beschreibt das Verfahren, also wer entscheidet oder auf
+  welchem Weg der Eintrag entsteht, nie den Gegenstand:
+  "volksabstimmung" = Ergebnis einer Urnenabstimmung;
+  "ratsbeschluss" = Sachvorlage des Einwohnerrats (Budget, Kredit,
+  Reglement, Bevölkerungsanliegen, Kenntnisnahme);
+  "wahl", "motion", "postulat", "buergermotion" = diese Instrumente im
+  Einwohnerrat; "stadtrat" = Beschluss oder Mitteilung des Stadtrats
+  (auch eine Vorlage, die der Stadtrat erst an den Einwohnerrat
+  überweist); "auflage" = öffentliche Auflage, Projektauflage oder
+  Mitwirkung; "sonstiges" nur, wenn nichts davon passt.
 - Urheberschaft (urheber) nur übernehmen, wenn die Quelle Name und ggf.
   Partei ausdrücklich nennt. Nie aus dem Kontext erschliessen.
 `.trim();
@@ -54,7 +65,7 @@ export const KATEGORISIERUNGSREGELN = `
 export const REFERENDUMSFRIST_REGEL = `
 referendumspflichtig ist nur true, wenn die Quelle ausdrücklich sagt, dass
 der Beschluss dem Referendum untersteht (z. B. "unterliegt dem fakultativen
-Referendum", "referendumspflichtig"). Nie aus der Art des Geschäfts (Kredit,
+Referendum", "referendumspflichtig"). Nie aus dem Gegenstand (Kredit,
 Reglement) oder aus dem Betrag erschliessen. Ergebnisse einer Volks- bzw.
 Urnenabstimmung sind immer false: Der Volksentscheid ist endgültig, dagegen
 gibt es kein Referendum. Nennt die Quelle nichts dazu, gilt false.
@@ -119,7 +130,7 @@ kein Begleittext) mit genau dieser Form:
     {
       "id": string (stabil, ASCII, z. B. "2026-66-aufloesung"),
       "titel": string,
-      "art": "wahl" | "motion" | "postulat" | "buergermotion" | "reglement" | "kredit" | "sonstiges",
+      "art": ${ARTEN_LISTE},
       "urheber": { "name": string, "partei": string | null } | null,
       "ereignis": string | null,
       "referendumspflichtig": boolean,

@@ -202,7 +202,10 @@ Entscheid, siehe Umsetzungsplan) — ein On-Demand-Nachweis.
 ## Datenanforderung (Entwicklungsdokument Abschnitt 9)
 
 Jedes Geschäft in `geschaefte.json` enthält mindestens: stabile `id`, `titel`,
-`art` (Wahl/Motion/Postulat/Bürgermotion/Reglement/Kredit/Sonstiges),
+`art` (das Verfahren, nicht der Gegenstand: Volksabstimmung/Beschluss
+Einwohnerrat/Wahl/Motion/Postulat/Bürgermotion/Stadtrat/Auflage &
+Mitwirkung/Sonstiges, siehe
+[`docs/entscheide/2026-09-27-art-nach-verfahren.md`](docs/entscheide/2026-09-27-art-nach-verfahren.md)),
 `urheber` (Name + Partei, nur wenn die Quelle sie nennt, sonst `null`),
 `ereignis`, `referendumspflichtig`, `tags`, `sitzungsdatum`,
 `publikationsdatum`, `quellen` und implizit `ausgabe` (aus dem Ordnernamen).

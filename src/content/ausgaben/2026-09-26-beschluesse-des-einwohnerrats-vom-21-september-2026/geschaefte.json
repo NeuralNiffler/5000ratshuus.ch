@@ -2,7 +2,7 @@
   {
     "id": "2026-budget-2027",
     "titel": "Budget 2027 der Einwohnergemeinde Aarau",
-    "art": "sonstiges",
+    "art": "ratsbeschluss",
     "urheber": null,
     "ereignis": null,
     "referendumspflichtig": false,
@@ -24,7 +24,7 @@
   {
     "id": "2026-vk-rodungsweg",
     "titel": "Verpflichtungskredit für Sanierung Zivilschutzanlage Rodungsweg 14",
-    "art": "kredit",
+    "art": "ratsbeschluss",
     "urheber": null,
     "ereignis": null,
     "referendumspflichtig": true,
@@ -47,7 +47,7 @@
   {
     "id": "2026-pk-sporthalle-schachen",
     "titel": "Planungskredit für Variantenstudie Sporthalle Schachen",
-    "art": "kredit",
+    "art": "ratsbeschluss",
     "urheber": null,
     "ereignis": null,
     "referendumspflichtig": true,
@@ -70,7 +70,7 @@
   {
     "id": "2026-reglement-rafk",
     "titel": "Reglement über die Angebote der frühen Kindheit (RAfK)",
-    "art": "reglement",
+    "art": "ratsbeschluss",
     "urheber": null,
     "ereignis": null,
     "referendumspflichtig": true,
