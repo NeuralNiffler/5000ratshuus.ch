@@ -6,7 +6,9 @@ headline: >-
   Unterentfelden und KIFF-2.0-Beitrag angenommen
 kategorie: Amtliche Publikation
 datePublished: '2026-09-27'
-korrekturen: []
+korrekturen:
+  - datum: "2026-09-27"
+    beschreibung: "Beide Vorlagen waren fälschlich als referendumspflichtig markiert. Gegen das Ergebnis einer Volksabstimmung gibt es kein Referendum."
 description: >-
   Die Stimmberechtigten der Stadt Aarau haben am 27. September 2026 den
   Zusammenschlussvertrag mit Unterentfelden sowie die Erhöhung des Beitrags an

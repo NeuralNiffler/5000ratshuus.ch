@@ -5,7 +5,7 @@
     "art": "sonstiges",
     "urheber": null,
     "ereignis": "angenommen",
-    "referendumspflichtig": true,
+    "referendumspflichtig": false,
     "tags": [
       "Politik"
     ],
@@ -32,7 +32,7 @@
     "art": "kredit",
     "urheber": null,
     "ereignis": "angenommen",
-    "referendumspflichtig": true,
+    "referendumspflichtig": false,
     "tags": [
       "Kultur, Sport & Freizeit",
       "Bauen & Planung",

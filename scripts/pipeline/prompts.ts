@@ -52,6 +52,13 @@ export const KATEGORISIERUNGSREGELN = `
 `.trim();
 
 export const REFERENDUMSFRIST_REGEL = `
+referendumspflichtig ist nur true, wenn die Quelle ausdrücklich sagt, dass
+der Beschluss dem Referendum untersteht (z. B. "unterliegt dem fakultativen
+Referendum", "referendumspflichtig"). Nie aus der Art des Geschäfts (Kredit,
+Reglement) oder aus dem Betrag erschliessen. Ergebnisse einer Volks- bzw.
+Urnenabstimmung sind immer false: Der Volksentscheid ist endgültig, dagegen
+gibt es kein Referendum. Nennt die Quelle nichts dazu, gilt false.
+
 Die Referendumsfrist wird NIE als konkretes Datum gezeigt, auch wenn die
 Quelle sie nennt. Nur der Status referendumspflichtig (true/false) wird
 gesetzt. Für das genaue Datum wird auf die Originalquelle verwiesen. Diese

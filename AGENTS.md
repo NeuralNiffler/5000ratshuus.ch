@@ -103,6 +103,9 @@ verworfene Alternativen; hier nur die Umsetzung:
   von "Referendum" oder "Unterschrift". Andere Fristen (Bewerbung, Einsprache)
   dürfen ein Datum haben, siehe
   [`docs/entscheide/2026-09-26-fristdatum-pruefung-enger.md`](docs/entscheide/2026-09-26-fristdatum-pruefung-enger.md).
+- **`referendumspflichtig: true`** nur, wenn die Quelle das Referendum
+  ausdrücklich nennt, nie aus Art oder Betrag erschlossen. Ergebnisse einer
+  Volksabstimmung sind immer `false` (kein Referendum gegen den Volksentscheid).
 - Eine **Bürgermotion** ist ein Bevölkerungsanliegen, keine gewöhnliche Motion.
 - Nur Motionen/Postulate **amtierender Ratsmitglieder** gehören in die Gruppe
   „Motionen & Postulate".
