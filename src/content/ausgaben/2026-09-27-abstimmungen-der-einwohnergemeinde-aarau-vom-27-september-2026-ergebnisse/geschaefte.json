@@ -1,0 +1,47 @@
+[
+  {
+    "id": "2026-09-27-zusammenschluss-unterentfelden",
+    "titel": "Vertrag über den Zusammenschluss der Einwohnergemeinden Aarau und Unterentfelden zur Einwohnergemeinde Aarau",
+    "art": "volksabstimmung",
+    "urheber": null,
+    "ereignis": null,
+    "referendumspflichtig": false,
+    "tags": [
+      "Verwaltung & Organisation"
+    ],
+    "sitzungsdatum": "2026-09-27",
+    "publikationsdatum": "2026-09-27",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/aktuelles.html/204/news/11862",
+        "label": "Abstimmungen der Einwohnergemeinde Aarau vom 27. September 2026; Ergebnisse",
+        "typ": "amtliche_publikation"
+      }
+    ],
+    "gruppe": "sonstige",
+    "kurztext": "Die Stimmberechtigten stimmten über den Vertrag zum Zusammenschluss der Einwohnergemeinden Aarau und Unterentfelden zur Einwohnergemeinde Aarau ab."
+  },
+  {
+    "id": "2026-09-27-kiff2-beitrag",
+    "titel": "À-fonds-perdu-Beitrag für den Neubau des KIFF 2.0 von maximal CHF 1 622 500",
+    "art": "volksabstimmung",
+    "urheber": null,
+    "ereignis": null,
+    "referendumspflichtig": false,
+    "tags": [
+      "Kultur, Sport & Freizeit",
+      "Bauen & Planung"
+    ],
+    "sitzungsdatum": "2026-09-27",
+    "publikationsdatum": "2026-09-27",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/aktuelles.html/204/news/11862",
+        "label": "Abstimmungen der Einwohnergemeinde Aarau vom 27. September 2026; Ergebnisse",
+        "typ": "amtliche_publikation"
+      }
+    ],
+    "gruppe": "sonstige",
+    "kurztext": "Die Stimmberechtigten stimmten über einen À-fonds-perdu-Beitrag von maximal CHF 1 622 500 für den Neubau des KIFF 2.0 ab."
+  }
+]
