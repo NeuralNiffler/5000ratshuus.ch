@@ -1,0 +1,58 @@
+[
+  {
+    "id": "2026-09-27-zusammenschluss-unterentfelden",
+    "titel": "«Zäme wachse»: Zusammenschluss Aarau Unterentfelden – Genehmigung des Zusammenschlussvertrags",
+    "art": "sonstiges",
+    "urheber": null,
+    "ereignis": "angenommen",
+    "referendumspflichtig": true,
+    "tags": [
+      "Politik"
+    ],
+    "sitzungsdatum": "2026-09-27",
+    "publikationsdatum": "2026-09-27",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/aktuelles.html/204/news/11812",
+        "label": "Einwohnergemeinde: Abstimmungsergebnisse vom 27. September 2026",
+        "typ": "amtliche_publikation"
+      },
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/volksabstimmungen/ergebnisse-volksabstimmungen.html/895",
+        "label": "Abstimmungsergebnisse 27. September 2026",
+        "typ": "amtliche_publikation"
+      }
+    ],
+    "gruppe": "sonstige",
+    "kurztext": "Die Stimmberechtigten haben den Zusammenschlussvertrag zwischen den Einwohnergemeinden Aarau und Unterentfelden vom 23. März 2026 mit 52,65 Prozent Ja-Stimmen angenommen."
+  },
+  {
+    "id": "2026-09-27-kiff-2-0-beitrag",
+    "titel": "Erhöhung des städtischen Beitrags an den Neubau des KIFF 2.0",
+    "art": "kredit",
+    "urheber": null,
+    "ereignis": "angenommen",
+    "referendumspflichtig": true,
+    "tags": [
+      "Kultur, Sport & Freizeit",
+      "Bauen & Planung",
+      "Finanzen"
+    ],
+    "sitzungsdatum": "2026-09-27",
+    "publikationsdatum": "2026-09-27",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/aktuelles.html/204/news/11812",
+        "label": "Einwohnergemeinde: Abstimmungsergebnisse vom 27. September 2026",
+        "typ": "amtliche_publikation"
+      },
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/volksabstimmungen/ergebnisse-volksabstimmungen.html/895",
+        "label": "Abstimmungsergebnisse 27. September 2026",
+        "typ": "amtliche_publikation"
+      }
+    ],
+    "gruppe": "sonstige",
+    "kurztext": "Die Stimmberechtigten haben eine Erhöhung des städtischen Beitrags an den Neubau des KIFF 2.0 um einen à-fonds-perdu-Beitrag von maximal 1,6225 Mio. Franken mit 71,67 Prozent Ja-Stimmen angenommen."
+  }
+]
