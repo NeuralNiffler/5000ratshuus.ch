@@ -21,3 +21,8 @@ ABSENDER_ADRESSE = "kontaktformular@5000ratshuus.ch"
 # schlägt send() fehl, das Worker-Handling selbst ist aber testbar.
 [[send_email]]
 name = "KONTAKT_MAIL"
+
+# Secret (nicht hier, sondern verschlüsselt bei Cloudflare):
+#   TURNSTILE_SECRET  Secret-Key des Turnstile-Widgets fürs Kontaktformular.
+#   Setzen mit: npx wrangler secret put TURNSTILE_SECRET -c wrangler.toml
+#   Lokal in workers/kontakt/.dev.vars (gitignored).

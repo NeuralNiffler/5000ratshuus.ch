@@ -28,7 +28,12 @@ Dev-Server im Hintergrund starten: `astro dev --background`, verwaltet mit
 `astro dev stop`, `astro dev status`, `astro dev logs`.
 
 Der Kontakt-Worker liegt separat in `workers/kontakt/` mit eigenem
-`package.json`. Lokal testen: `cd workers/kontakt && npm install && npm run dev`.
+`package.json`. Lokal testen: `cd workers/kontakt && npm install && npm run dev`
+(braucht `TURNSTILE_SECRET` in `workers/kontakt/.dev.vars`, siehe README).
+Spamschutz: Honeypot, Cloudflare Turnstile (nur auf `/kontakt/`) und ein
+Inhaltsfilter, der Werbung mit `[Spam?]` im Betreff markiert, nie verwirft,
+siehe
+[`docs/entscheide/2026-09-28-kontaktformular-spamschutz.md`](docs/entscheide/2026-09-28-kontaktformular-spamschutz.md).
 
 Der Mail-Eingang (Email Worker, Newsletter-Mail → `repository_dispatch` →
 `.github/workflows/pipeline.yml`) liegt in `workers/eingang/`, ebenfalls mit

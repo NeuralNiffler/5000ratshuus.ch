@@ -72,11 +72,13 @@ Repo-Root nehmen. Die npm-Skripte des Eingangs-Workers tun das bereits.
 ```sh
 cd workers/kontakt
 npm install
+printf 'TURNSTILE_SECRET=1x0000000000000000000000000000000AA\n' > .dev.vars
 npm run dev
 ```
 
 Lokal lässt sich die Validierung testen, der echte Mailversand braucht Email
-Routing auf der Domain.
+Routing auf der Domain. Die `.dev.vars` enthält Cloudflares Turnstile-
+Testschlüssel "besteht immer" (`2x…AA` statt `1x…AA` für "scheitert immer").
 
 **Mail-Eingang** (`workers/eingang/`):
 
@@ -94,7 +96,7 @@ curl -X POST "http://localhost:8799/cdn-cgi/handler/email?from=kommunikation@aar
 | Teil | Wie | Benötigt |
 | --- | --- | --- |
 | Website | automatisch über die Cloudflare-Git-Integration bei jedem Push auf `main` | – |
-| Kontakt-Worker | von Hand: `cd workers/kontakt && npx wrangler deploy -c wrangler.toml` | Cloudflare-Login, Zieladresse in Email Routing verifiziert |
+| Kontakt-Worker | von Hand: `cd workers/kontakt && npx wrangler deploy -c wrangler.toml` | Cloudflare-Login, Zieladresse in Email Routing verifiziert, Wrangler-Secret `TURNSTILE_SECRET` |
 | Eingangs-Worker | von Hand: `cd workers/eingang && npx wrangler deploy -c wrangler.toml` | Wrangler-Secret `GITHUB_TOKEN` (`npx wrangler secret put GITHUB_TOKEN`) |
 | Pipeline | GitHub Action `pipeline.yml`, ausgelöst vom Eingangs-Worker oder von Hand (`workflow_dispatch`) | Repo-Secret `ANTHROPIC_API_KEY` |
 

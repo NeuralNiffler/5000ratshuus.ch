@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+
+/**
+ * Fehlerseiten des Kontaktformulars. Der Kontakt-Worker leitet bei einer
+ * abgelehnten Eingabe hierher weiter (/kontakt/fehler/<grund>/). Je Grund eine
+ * statische Seite, damit die Meldung ohne JavaScript angezeigt wird.
+ */
+export function getStaticPaths() {
+  return [
+    {
+      params: { grund: "eingabe" },
+      props: { text: "Bitte gib eine gültige E-Mail-Adresse und eine Nachricht ein." },
+    },
+    {
+      params: { grund: "zu-lang" },
+      props: { text: "Die Nachricht ist zu lang. Bitte kürze sie auf höchstens 5000 Zeichen." },
+    },
+    {
+      params: { grund: "pruefung" },
+      props: {
+        text: "Die automatische Spam-Prüfung ist fehlgeschlagen oder abgelaufen. Bitte versuche es noch einmal.",
+      },
+    },
+  ];
+}
+
+const { text } = Astro.props;
+---
+
+<BaseLayout title="Nachricht nicht gesendet" description="Die Nachricht konnte nicht gesendet werden." noindex>
+  <h1>Nachricht nicht gesendet</h1>
+  <p class="page-content">{text}</p>
+  <p class="page-content">
+    <a href="/kontakt/">Zurück zum Kontaktformular</a> (über die Zurück-Taste des Browsers bleibt dein Text meist
+    erhalten).
+  </p>
+</BaseLayout>

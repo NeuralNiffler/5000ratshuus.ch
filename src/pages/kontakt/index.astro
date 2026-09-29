@@ -38,10 +38,24 @@ import { siteConfig } from "../../site.config";
         <label for="website">Website</label>
         <input type="text" id="website" name="website" tabindex="-1" autocomplete="off" />
       </p>
+      <!--
+        Cloudflare Turnstile: prüft im Hintergrund, ob ein Mensch das Formular
+        abschickt, und legt das Ergebnis als Token ins Feld
+        cf-turnstile-response. Der Kontakt-Worker prüft das Token bei
+        Cloudflare nach. Siehe docs/entscheide/2026-09-28-kontaktformular-spamschutz.md.
+      -->
+      <div class="cf-turnstile" data-sitekey={siteConfig.turnstileSiteKey} data-language="de"></div>
+      <noscript>
+        <p class="hinweis">
+          Zum Schutz vor Spam braucht das Formular JavaScript (Cloudflare Turnstile). Bitte aktiviere JavaScript,
+          um eine Nachricht zu senden.
+        </p>
+      </noscript>
       <p>
         <button type="submit">Nachricht senden</button>
       </p>
     </form>
+    <script is:inline src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
   </div>
 </BaseLayout>
 
@@ -76,6 +90,14 @@ import { siteConfig } from "../../site.config";
   }
   .kontakt-form button:hover {
     filter: brightness(1.08);
+  }
+  .cf-turnstile {
+    margin: 0.5rem 0 1rem;
+  }
+  .hinweis {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--sub);
   }
   .hp-field {
     position: absolute;

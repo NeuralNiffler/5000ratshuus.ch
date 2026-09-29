@@ -14,7 +14,7 @@ import { siteConfig } from "../site.config";
     <h2>Besuch der Seite</h2>
     <p>
       Die Seite liefert statische Seiten aus. Sie setzt keine Cookies und bindet keine Analyse-, Tracking- oder
-      Werbeskripte Dritter ein. Beim Aufruf verarbeitet der Hosting-Anbieter Cloudflare technisch notwendige
+      Werbeskripte Dritter ein (zum Spamschutz auf der Kontaktseite siehe unten). Beim Aufruf verarbeitet der Hosting-Anbieter Cloudflare technisch notwendige
       Verbindungsdaten (z. B. IP-Adresse, Zeitpunkt und aufgerufene Adresse), um die Seite auszuliefern und
       abzusichern. Cloudflare kann diese Daten auch ausserhalb der Schweiz verarbeiten.
     </p>
@@ -30,6 +30,13 @@ import { siteConfig } from "../site.config";
     <p>
       Ein für Menschen unsichtbares Formularfeld dient dazu, automatisierte Spam-Anfragen zu erkennen.
     </p>
+    <p>
+      Zusätzlich lädt die Kontaktseite (nur diese Seite) den Dienst Turnstile von Cloudflare. Turnstile prüft
+      anhand technischer Merkmale des Browsers (z. B. IP-Adresse und Browsereigenschaften), ob das Formular von
+      einem Menschen abgeschickt wird. Es dient nicht zu Werbe- oder Analysezwecken. Details stehen in der
+      <a href="https://www.cloudflare.com/turnstile-privacy-policy/">Datenschutzerklärung von Cloudflare zu
+      Turnstile</a>.
+    </p>
 
     <h2>Deine Rechte</h2>
     <p>
@@ -37,6 +44,6 @@ import { siteConfig } from "../site.config";
       <a href="/kontakt/">Kontaktformular</a>.
     </p>
 
-    <p><small>Stand: 19. September 2026</small></p>
+    <p><small>Stand: 28. September 2026</small></p>
   </div>
 </BaseLayout>

@@ -15,6 +15,14 @@ export const siteConfig = {
   lang: "de-CH",
   /** Pfad zur Kontaktseite, für Footer- und Disclaimer-Links. */
   contactPath: "/kontakt/",
+  /**
+   * Öffentlicher Site-Key des Cloudflare-Turnstile-Widgets im Kontaktformular.
+   * Der zugehörige Secret-Key liegt nur als Secret TURNSTILE_SECRET im
+   * Kontakt-Worker. Für lokale Tests mit dem Kontakt-Worker lässt sich
+   * Cloudflares Testschlüssel 1x00000000000000000000AA ("besteht immer")
+   * einsetzen, nie committen.
+   */
+  turnstileSiteKey: "0x4AAAAAAFI5xqd7M74lURpm",
   /** Disclaimer-Text, verbindlich laut Entwicklungsdokument F5. */
   disclaimer:
     "Diese Seite wird KI-gestützt betrieben. Fehler können vorkommen, bei Auffälligkeiten bitte über das Kontaktformular melden.",
