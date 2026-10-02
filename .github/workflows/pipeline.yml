@@ -94,6 +94,7 @@ jobs:
         run: printf '%s' "$MAILTEXT" > "$RUNNER_TEMP/mailtext.txt"
 
       - name: Pipeline ausführen
+        id: pipeline
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           # Modellwahl: Standard ist claude-sonnet-5 (scripts/pipeline/claude-client.ts).
@@ -128,6 +129,7 @@ jobs:
       # Laufs auf main gelandet sind (z. B. ein manueller Push). Die CSV-Zeile
       # führt dabei nicht zum Konflikt, siehe merge=union in .gitattributes.
       - name: Neue Ausgabe und Entscheid committen und pushen
+        id: push
         if: success()
         run: |
           git config user.name "5000ratshuus-pipeline[bot]"
@@ -162,18 +164,67 @@ jobs:
       # Benachrichtigungsdienst nötig (Schritt 15: "Robin bei Fehlern
       # benachrichtigen"). Der Text geht über eine Datei, nicht über eine
       # Shell-Zeichenkette: das Protokoll enthält den (externen) Betreff.
+      #
+      # Titel und erste Zeilen sagen, wo der Lauf gescheitert ist und was
+      # entschieden wurde, damit die Benachrichtigung allein reicht, um
+      # "harmlos, neu starten" von "Mail nicht verarbeitet" zu unterscheiden.
+      # Drei Fälle nach den Step-Outcomes:
+      #   - Push gescheitert: Entscheid steht fest, nur der Commit fehlt
+      #     (CSV-Zeile und ggf. Ausgabe). Ein Re-Run holt ihn nach.
+      #   - Pipeline gescheitert: Mail nicht verarbeitet, Fehler aus dem Protokoll.
+      #   - davor gescheitert (npm ci usw.): es gibt kein Protokoll.
       - name: Bei Fehlschlag ein Issue erstellen
         if: failure()
         env:
           GH_TOKEN: ${{ github.token }}
           LAUF_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          PIPELINE_OUTCOME: ${{ steps.pipeline.outcome }}
+          PUSH_OUTCOME: ${{ steps.push.outcome }}
         run: |
+          protokoll=$(ls .build/pipeline-log/*.json 2>/dev/null | tail -n 1)
+          # "|| true": Der Runner nutzt bash -e, ohne Protokoll bräche sonst das
+          # Skript ab und das Issue (der Alarm) bliebe aus.
+          feld() { [ -n "$protokoll" ] && jq -r --arg f "$1" '.[$f] // empty' "$protokoll" || true; }
+          entscheid=$(feld entscheid)
+          quelle=$(feld quelle)
+          grund=$(feld grund)
+          fehler=$(feld fehler)
+
+          if [ "$PUSH_OUTCOME" = "failure" ]; then
+            phase="beim Push"
+            case "$entscheid" in
+              verarbeitet)
+                hinweis="Die Ausgabe wurde erzeugt und geprüft, aber nicht publiziert. Lauf neu starten (\"Re-run failed jobs\"). Achtung: Der Re-Run erzeugt den Artikel neu, mit neuem Claude-Aufruf." ;;
+              *)
+                hinweis="Der Entscheid ist korrekt gefallen, nur die Zeile in docs/pipeline-entscheide.csv fehlt im Repo. Kein Grund zur Sorge: Lauf neu starten (\"Re-run failed jobs\"), das holt die Zeile nach." ;;
+            esac
+          elif [ "$PIPELINE_OUTCOME" = "failure" ]; then
+            phase="in der Verarbeitung"
+            hinweis="Die Mail wurde nicht verarbeitet. Fehler prüfen, beheben und den Lauf neu starten."
+          else
+            phase="vor der Verarbeitung"
+            hinweis="Der Lauf ist vor der Pipeline gescheitert (z. B. npm ci), die Mail wurde nicht angeschaut. Log prüfen und den Lauf neu starten."
+          fi
+
+          titel="Pipeline-Fehler $phase"
+          if [ -n "$entscheid" ] && [ "$entscheid" != "fehler" ]; then
+            titel="$titel ($entscheid)"
+          fi
+          titel="$titel: $BETREFF"
+
           {
-            echo "Lauf: $LAUF_URL"
+            echo "**$hinweis**"
+            echo
+            echo "- Gescheitert: $phase"
+            echo "- Entscheid: ${entscheid:-keiner}"
+            [ -n "$quelle" ] && echo "- Quelle: $quelle"
+            [ -n "$grund" ] && echo "- Grund: $grund"
+            [ -n "$fehler" ] && echo "- Fehler: $fehler"
+            echo "- Lauf: $LAUF_URL"
             echo
             echo "Protokoll:"
             echo '```json'
-            cat .build/pipeline-log/*.json 2>/dev/null || echo "Kein Protokoll gefunden."
+            if [ -n "$protokoll" ]; then cat "$protokoll"; else echo "Kein Protokoll gefunden."; fi
             echo '```'
           } > "$RUNNER_TEMP/issue.md"
           # Ohne vorhandenes Label schlägt "gh issue create --label" fehl,
@@ -181,7 +232,7 @@ jobs:
           gh label create pipeline-fehler --color B60205 \
             --description "Fehler in der Newsletter-Pipeline" 2>/dev/null || true
           gh issue create \
-            --title "Pipeline-Fehler: $BETREFF" \
+            --title "$titel" \
             --label "pipeline-fehler" \
             --body-file "$RUNNER_TEMP/issue.md"
 
