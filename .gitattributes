@@ -1,0 +1,4 @@
+# Jeder Pipeline-Lauf hängt eine Zeile ans Ende an. Laufen zwei Läufe kurz
+# nacheinander, behält der union-Merge beim "git pull --rebase" im Workflow
+# beide Zeilen, statt mit einem Konflikt abzubrechen.
+docs/pipeline-entscheide.csv merge=union
