@@ -1,0 +1,35 @@
+[
+  {
+    "id": "2026-erschliessungsplan-nr3-mitwirkung",
+    "titel": "Öffentliche Mitwirkung Änderung Erschliessungsplan Nr. 3",
+    "art": "auflage",
+    "urheber": null,
+    "ereignis": null,
+    "referendumspflichtig": false,
+    "tags": [
+      "Bauen & Planung",
+      "Umwelt & Energie"
+    ],
+    "sitzungsdatum": null,
+    "publikationsdatum": "2026-10-09",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/aktuelles.html/204/news/11875",
+        "label": "Amtliche Publikation: Öffentliche Mitwirkung Änderung Erschliessungsplan Nr. 3",
+        "typ": "amtliche_publikation"
+      },
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/vernehmlassungen.html/280",
+        "label": "Laufende Vernehmlassungen",
+        "typ": "amtliche_publikation"
+      },
+      {
+        "url": "https://mitwirken.smartcity-aarau.ch/de",
+        "label": "E-Mitwirkung Online-Plattform",
+        "typ": "sonstige"
+      }
+    ],
+    "gruppe": "sonstige",
+    "kurztext": "Der Erschliessungsplan Nr. 3 in Aarau Rohr wird an die geltende Nutzungsplanung und die rechtlichen Waldabstände angepasst, da die bisherigen Waldbaulinien nicht mit den statischen Waldgrenzen übereinstimmen. Der Entwurf liegt öffentlich auf, die Bevölkerung kann Mitwirkungseingaben einreichen."
+  }
+]
