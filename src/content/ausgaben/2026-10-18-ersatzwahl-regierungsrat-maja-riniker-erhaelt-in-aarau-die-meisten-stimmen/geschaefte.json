@@ -1,0 +1,29 @@
+[
+  {
+    "id": "2026-10-18-ersatzwahl-regierungsrat",
+    "titel": "Ersatzwahl eines Mitglieds des Regierungsrats für den Rest der Amtsperiode 2025/2028",
+    "art": "wahl",
+    "urheber": null,
+    "ereignis": null,
+    "referendumspflichtig": false,
+    "tags": [
+      "Politik"
+    ],
+    "sitzungsdatum": "2026-10-18",
+    "publikationsdatum": "2026-10-18",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/aktuelles.html/204/news/11879",
+        "label": "Einwohnergemeinde: Wahlergebnisse vom 18. Oktober 2026",
+        "typ": "amtliche_publikation"
+      },
+      {
+        "url": "https://www.aarau.ch/public/upload/assets/39187/2026-10-18%20Abstimmungsprotokoll%20Kanton%20Urnengang%2018.10.2026.pdf?fp=1",
+        "label": "Abstimmungsprotokoll Kanton, Urnengang 18.10.2026",
+        "typ": "sonstige"
+      }
+    ],
+    "gruppe": "wahlen",
+    "kurztext": "Von den Stimmbürgerinnen und Stimmbürgern der Stadt Aarau erhielt Maja Riniker (FDP) bei der Ersatzwahl für den Regierungsrat die meisten Stimmen."
+  }
+]
