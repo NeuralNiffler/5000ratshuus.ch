@@ -1,0 +1,29 @@
+[
+  {
+    "id": "2026-shared-mobility-dashboard",
+    "titel": "Die Stadt Aarau macht «Shared Mobility» sichtbar",
+    "art": "stadtrat",
+    "urheber": null,
+    "ereignis": null,
+    "referendumspflichtig": false,
+    "tags": [
+      "Verkehr & Mobilität"
+    ],
+    "sitzungsdatum": null,
+    "publikationsdatum": "2026-10-21",
+    "quellen": [
+      {
+        "url": "https://www.aarau.ch/politik-verwaltung/aktuelles.html/204/news/11890",
+        "label": "Die Stadt Aarau macht «Shared Mobility» sichtbar",
+        "typ": "amtliche_publikation"
+      },
+      {
+        "url": "https://app.powerbi.com/view?r=eyJrIjoiMmU3MzgyMmMtODBlZi00N2ZkLTlkMzAtMWFlNzEzMWZkMWZiIiwidCI6IjBlYWEyOWE3LTk3NTQtNDMyMi1iMzU2LWQ5ODEyMzQxY2Q3MiIsImMiOjl9",
+        "label": "Shared-Mobility-Dashboard",
+        "typ": "sonstige"
+      }
+    ],
+    "gruppe": "sonstige",
+    "kurztext": "Ein neues Dashboard zeigt das gesamte Shared-Mobility-Angebot im Aarauer Stadtgebiet: rund 300 geteilte Autos, Velos, E-Bikes und E-Cargobikes von fünf Anbietenden, mit 27 000 Fahrten im vergangenen Jahr."
+  }
+]
