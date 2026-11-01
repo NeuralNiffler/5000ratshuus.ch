@@ -51,8 +51,14 @@ permissions:
   contents: write
   issues: write
 
+# Eine Gruppe pro Mail, nicht eine für alle: GitHub hält pro Gruppe nur einen
+# wartenden Lauf und bricht den vorherigen wartenden ab, sobald ein weiterer
+# dazukommt. Bei drei Mails in derselben Sekunde ging so eine still verloren
+# (30.10.2026, Beschlüsse des Einwohnerrats). Verschiedene Mails laufen jetzt
+# parallel; der Push-Schritt unten verträgt das. Siehe
+# docs/entscheide/2026-11-01-pipeline-parallele-laeufe.md.
 concurrency:
-  group: pipeline
+  group: pipeline-${{ inputs.message_id || github.event.client_payload.message_id }}
   cancel-in-progress: false
 
 jobs:
@@ -70,10 +76,10 @@ jobs:
       ERZWINGEN: ${{ inputs.erzwingen == true && 'true' || '' }}
     steps:
       # ref: main statt des Standard-SHA: Bei repository_dispatch (und bei
-      # jedem Re-Run) ist der SHA der Stand von main beim Auslösen. Kommen zwei
-      # Mails kurz nacheinander, wartet der zweite Lauf dank concurrency zwar
-      # auf den ersten, würde aber ohne ref den Stand vor dessen Push auschecken
-      # und beim Push abgelehnt (so geschehen am 02.10.2026).
+      # jedem Re-Run) ist der SHA der Stand von main beim Auslösen, bei einem
+      # Re-Run Tage später also ein veralteter Stand (so geschehen am
+      # 02.10.2026). Mit main fehlen höchstens Commits paralleler Läufe, die
+      # der Push-Schritt per Rebase nachholt.
       - name: Checkout
         uses: actions/checkout@v7
         with:
@@ -126,8 +132,10 @@ jobs:
       # nachvollziehbar sind. Fehlerläufe erreichen diesen Schritt nicht, sie
       # sind über das Issue "pipeline-fehler" sichtbar.
       # "git pull --rebase" vor dem Push fängt Commits ab, die während des
-      # Laufs auf main gelandet sind (z. B. ein manueller Push). Die CSV-Zeile
-      # führt dabei nicht zum Konflikt, siehe merge=union in .gitattributes.
+      # Laufs auf main gelandet sind (z. B. ein manueller Push oder ein
+      # paralleler Lauf). Die CSV-Zeile führt dabei nicht zum Konflikt, siehe
+      # merge=union in .gitattributes. Pushen zwei Läufe fast gleichzeitig,
+      # wird einer abgelehnt; deshalb bis zu drei Versuche.
       - name: Neue Ausgabe und Entscheid committen und pushen
         id: push
         if: success()
@@ -145,8 +153,13 @@ jobs:
             echo "Nichts zu committen."
           else
             git commit -m "$nachricht"
-            git pull --rebase origin main
-            git push
+            for versuch in 1 2 3; do
+              # Ein echter Rebase-Konflikt wird durch Wiederholen nicht besser.
+              git pull --rebase origin main || { git rebase --abort; exit 1; }
+              git push && break
+              if [ "$versuch" = 3 ]; then exit 1; fi
+              sleep $((versuch * 5))
+            done
           fi
 
       - name: Entwurf als Artifact hochladen (bei Fehlschlag)
