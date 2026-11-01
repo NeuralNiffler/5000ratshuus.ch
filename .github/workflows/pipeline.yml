@@ -104,8 +104,11 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           # Modellwahl: Standard ist claude-sonnet-5 (scripts/pipeline/claude-client.ts).
-          # Zum Umschalten das # entfernen. Opus 5.5 kostet pro Token doppelt so viel.
-          # ANTHROPIC_MODEL: claude-opus-5-5
+          # Seit 01.11.2026 Versuch mit Sonnet 5.5 (gleicher Preis), nachdem
+          # Sonnet 5 bei den Einwohnerrats-Beschlüssen vom 26.10. das Token-Limit
+          # erreichte. Zum Zurückstellen die Zeile auskommentieren.
+          # Opus 5.5 kostet pro Token doppelt so viel.
+          ANTHROPIC_MODEL: claude-sonnet-5-5
         run: |
           npm run pipeline:run -- \
             --mailtext-datei "$RUNNER_TEMP/mailtext.txt" \

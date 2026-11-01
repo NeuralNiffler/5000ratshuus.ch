@@ -17,6 +17,7 @@ const STANDARD_MAX_TOKENS = 8000;
  */
 const PREISE_USD_PRO_MIO: Record<string, { input: number; output: number }> = {
   "claude-sonnet-5": { input: 2, output: 10 },
+  "claude-sonnet-5-5": { input: 2, output: 10 },
   "claude-haiku-4-5": { input: 1, output: 5 },
   "claude-opus-5": { input: 5, output: 25 },
   "claude-opus-5-5": { input: 4, output: 20 },
@@ -28,9 +29,10 @@ const PREISE_USD_PRO_MIO: Record<string, { input: number; output: number }> = {
  * Budget aufbrauchen, bevor ein Text-Block entsteht (bei der Kategorisierung
  * mit 500 Tokens fast sicher). Steuerbar ist nur der Aufwand (effort).
  * Standardmodell (Sonnet 5) ist bewusst nicht drin: dort bleibt der Request
- * unverändert.
+ * unverändert. Sonnet 5.5 lehnt thinking "disabled" ab und hat ohne
+ * effort-Angabe "high" als Standard, deshalb ebenfalls hier.
  */
-const IMMER_THINKING = new Set(["claude-opus-5-5"]);
+const IMMER_THINKING = new Set(["claude-opus-5-5", "claude-sonnet-5-5"]);
 const THINKING_RESERVE = 16000;
 
 export type Effort = "low" | "medium" | "high";
