@@ -38,6 +38,28 @@ vom Workflow committet, auch wenn die Mail aussortiert wurde.
   weder Mailtext noch `messageId`, nur der Betreff (der Newsletter ist
   öffentlich) und der Grund.
 
+## Nachtrag 2026-11-04: Abgrenzung von «Planung»
+
+**Anlass:** Die Medienmitteilung «Bestandessanierung und Baumersatz am
+Zollrain» (03.11.2026) wurde als «Stadtplanung und Stadtraumgestaltung»
+aufgenommen, obwohl sie keinen Beschluss, keine Kosten und keine Auflage
+nannte. Die Ausgabe wurde wieder entfernt, die Zeile in der CSV bleibt als
+Protokoll des damaligen Entscheids.
+
+**Abgrenzung im Prompt:** «Planung» meint formelle Planungsverfahren und
+-entscheide. Unterhalts-, Sanierungs- und Bauarbeiten sowie Baumersatz sind
+nicht relevant, wenn die Mail keinen Beschluss, keinen Kredit und kein
+Mitwirkungsverfahren nennt. Die Regel grenzt nach Art der Meldung ab, nicht
+nach fehlenden Details: «Beschlüsse des Einwohnerrats» bleibt relevant, auch
+wenn der Mailtext die einzelnen Beschlüsse nicht aufzählt.
+
+**Warum im Prompt statt in `filter-regeln.json`:** Ein Betreff-Muster würde
+nur diesen einen Fall treffen, das Problem war die Auslegung des Kriteriums.
+
+**Folge:** Meldungen zu Vorhaben ohne Verfahren werden eher aussortiert. Das
+entspricht «im Zweifel lieber nichts publizieren», zu Unrecht aussortierte
+Mails lassen sich mit `erzwingen` nachholen.
+
 ## Grenzen
 
 - Fehlerläufe werden nicht committet und stehen deshalb nicht in der CSV.

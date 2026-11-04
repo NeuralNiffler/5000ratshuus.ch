@@ -164,6 +164,14 @@ Einbürgerungsgesuche) sind NICHT relevant. Relevant ist nur echte
 politische Substanz: Beschlüsse, Budget/Finanzen, Planung,
 Vernehmlassungen/öffentliche Auflagen.
 
+"Planung" meint formelle Planungsverfahren und -entscheide (z. B.
+Nutzungs-, Gestaltungs- oder Erschliessungsplan), nicht jedes Vorhaben im
+Stadtraum. Unterhalts-, Sanierungs- und Bauarbeiten sowie Baumersatz sind
+NICHT relevant, wenn die Mail keinen Beschluss, keinen Kredit und kein
+Mitwirkungsverfahren nennt. Diese Abgrenzung gilt nach Art der Meldung:
+Eine Publikation von Beschlüssen bleibt relevant, auch wenn der Mailtext
+die einzelnen Beschlüsse nicht aufzählt.
+
 Antworte ausschliesslich mit einem JSON-Objekt:
 { "kategorie": "Medienmitteilung" | "Amtliche Publikation" | "Baugesuch" | "unklar",
   "relevant": boolean, "grund": string (kurze Begründung, Deutsch) }
